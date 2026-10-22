@@ -1,0 +1,1653 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" href="data:," />
+    <script>document.documentElement.classList.add('js');</script>
+    <title>TapReview Pro — One Tap. Five Stars.</title>
+    <meta name="description" content="TapReview Pro is the NFC tap card that sends happy customers straight to your Google review page. No app, no QR hunting, no subscription. $22 each, 3 for $55, 10 for $175." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #04060c;
+        --bg-2: #080b16;
+        --panel: #0b0f1e;
+        --panel-2: #0e1428;
+        --line: rgba(94, 234, 255, 0.16);
+        --line-soft: rgba(148, 178, 255, 0.12);
+        --ink: #eef4ff;
+        --ink-dim: #a7b4d4;
+        --ink-faint: #6d7ba0;
+        --cyan: #22d8f2;
+        --cyan-hot: #5eeaff;
+        --gold: #ffc531;
+        --green: #34d399;
+        --radius: 20px;
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; overflow-x: hidden; overflow-x: clip; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Manrope", system-ui, sans-serif;
+        font-size: 17px;
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
+      ::selection { background: var(--cyan); color: #02141a; }
+      a { color: inherit; }
+      img { max-width: 100%; display: block; }
+
+      /* ---------- backdrop: grid + stars + glow ---------- */
+      .backdrop { position: fixed; inset: 0; z-index: -2; background:
+        radial-gradient(900px 500px at 85% -10%, rgba(34, 216, 242, 0.14), transparent 60%),
+        radial-gradient(700px 500px at -10% 30%, rgba(66, 133, 244, 0.10), transparent 60%),
+        linear-gradient(180deg, #04060c, #05070f 40%, #04060c);
+      }
+      .backdrop::before {
+        content: ""; position: absolute; inset: 0;
+        background-image:
+          linear-gradient(rgba(94, 234, 255, 0.05) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(94, 234, 255, 0.05) 1px, transparent 1px);
+        background-size: 56px 56px;
+        mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, black 30%, transparent 75%);
+        -webkit-mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, black 30%, transparent 75%);
+      }
+      .backdrop::after {
+        content: ""; position: absolute; inset: 0;
+        background-image:
+          radial-gradient(1.5px 1.5px at 12% 22%, rgba(255,255,255,.8) 50%, transparent 51%),
+          radial-gradient(1px 1px at 32% 8%, rgba(255,255,255,.6) 50%, transparent 51%),
+          radial-gradient(1.5px 1.5px at 58% 16%, rgba(255,255,255,.7) 50%, transparent 51%),
+          radial-gradient(1px 1px at 76% 30%, rgba(255,255,255,.5) 50%, transparent 51%),
+          radial-gradient(1px 1px at 90% 12%, rgba(255,255,255,.7) 50%, transparent 51%),
+          radial-gradient(1px 1px at 45% 38%, rgba(255,255,255,.4) 50%, transparent 51%),
+          radial-gradient(1.5px 1.5px at 5% 48%, rgba(255,255,255,.5) 50%, transparent 51%),
+          radial-gradient(1px 1px at 68% 52%, rgba(255,255,255,.45) 50%, transparent 51%);
+      }
+
+      .wrap { width: min(1180px, 100% - 40px); margin-inline: auto; }
+
+      /* ---------- nav ---------- */
+      nav {
+        position: sticky; top: 0; z-index: 50;
+        backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+        background: rgba(4, 6, 12, 0.72);
+        border-bottom: 1px solid var(--line-soft);
+      }
+      .nav-in { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 0; }
+      .nav-links { display: flex; gap: 28px; font-weight: 600; font-size: 15px; color: var(--ink-dim); }
+      .nav-links a { text-decoration: none; }
+      .nav-links a:hover { color: var(--cyan-hot); }
+      .nav-cta {
+        font-family: "JetBrains Mono", monospace; font-size: 13px; font-weight: 700;
+        letter-spacing: .04em; text-decoration: none; color: #02141a;
+        background: var(--cyan); padding: 10px 18px; border-radius: 999px;
+        box-shadow: 0 0 22px rgba(34, 216, 242, .45);
+        transition: transform .15s ease, box-shadow .15s ease;
+      }
+      .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 0 32px rgba(34, 216, 242, .65); }
+      @media (max-width: 640px) { .nav-links { display: none; } }
+
+      /* ---------- hero ---------- */
+      .hero { padding: 72px 0 40px; overflow: hidden; }
+      .hero-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 56px; align-items: center; }
+      @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; gap: 44px; } .hero { padding-top: 44px; } }
+
+      .kicker {
+        display: inline-flex; align-items: center; gap: 10px;
+        font-family: "JetBrains Mono", monospace; font-size: 12.5px; font-weight: 700;
+        letter-spacing: .22em; color: var(--cyan-hot);
+        border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px;
+        background: rgba(34, 216, 242, .06);
+      }
+      .kicker .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 10px var(--cyan); animation: blink 1.8s infinite; }
+      @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+
+      h1 {
+        font-family: "Orbitron", sans-serif; font-weight: 900;
+        font-size: clamp(42px, 6.4vw, 76px); line-height: 1.02;
+        letter-spacing: .01em; margin: 26px 0 0; text-transform: uppercase;
+      }
+      h1 .stars-line { color: var(--gold); text-shadow: 0 0 34px rgba(255, 197, 49, .35); }
+      h1 .tap-line { color: var(--cyan-hot); text-shadow: 0 0 34px rgba(34, 216, 242, .45); }
+      .hero-sub { color: var(--ink-dim); font-size: 19px; max-width: 34rem; margin: 22px 0 0; }
+      .hero-sub strong { color: var(--ink); }
+
+      .hero-ctas { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 32px; }
+      .btn {
+        display: inline-flex; align-items: center; gap: 10px;
+        font-weight: 800; font-size: 16px; text-decoration: none;
+        padding: 16px 28px; border-radius: 999px; border: 1px solid transparent;
+        transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+      }
+      .btn-primary { background: var(--cyan); color: #02141a; box-shadow: 0 0 30px rgba(34, 216, 242, .4); }
+      .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 44px rgba(34, 216, 242, .6); }
+      .btn-ghost { border-color: var(--line); color: var(--ink); background: rgba(11, 15, 30, .6); }
+      .btn-ghost:hover { border-color: var(--cyan); color: var(--cyan-hot); }
+
+      .hero-stats { display: flex; flex-wrap: wrap; gap: 10px 34px; margin-top: 36px; }
+      .stat b { font-family: "Orbitron", sans-serif; font-size: 22px; display: block; color: var(--ink); }
+      .stat span { font-size: 13px; color: var(--ink-faint); font-weight: 600; letter-spacing: .02em; }
+
+      /* product stage */
+      .stage { position: relative; display: grid; place-items: center; min-height: 340px; perspective: 1100px; }
+      .orbit {
+        position: absolute; border: 1px dashed rgba(94, 234, 255, .25); border-radius: 50%;
+        animation: spin 26s linear infinite;
+      }
+      .orbit.o1 { width: 118%; aspect-ratio: 1; }
+      .orbit.o2 { width: 92%; aspect-ratio: 1; animation-duration: 18s; animation-direction: reverse; border-color: rgba(255, 197, 49, .18); }
+      @keyframes spin { to { transform: rotate(360deg); } }
+      .pulse-ring {
+        position: absolute; width: 120px; height: 120px; border-radius: 50%;
+        border: 2px solid rgba(34, 216, 242, .55);
+        animation: pulse 2.6s ease-out infinite;
+      }
+      .pulse-ring.r2 { animation-delay: .85s; }
+      .pulse-ring.r3 { animation-delay: 1.7s; }
+      @keyframes pulse { 0% { transform: scale(.4); opacity: .9; } 100% { transform: scale(2.6); opacity: 0; } }
+      .tilt {
+        position: relative; z-index: 2; width: min(430px, 88%);
+        transform-style: preserve-3d; transition: transform .25s ease;
+        filter: drop-shadow(0 30px 60px rgba(0, 0, 0, .65)) drop-shadow(0 0 42px rgba(34, 216, 242, .18));
+      }
+      .tilt img { border-radius: 26px; }
+      .float-tag {
+        position: absolute; z-index: 3;
+        font-family: "JetBrains Mono", monospace; font-size: 12px; font-weight: 700;
+        background: rgba(8, 11, 22, .9); border: 1px solid var(--line);
+        padding: 9px 13px; border-radius: 12px; color: var(--cyan-hot);
+        box-shadow: 0 10px 30px rgba(0,0,0,.5);
+      }
+      .float-tag.gold { color: var(--gold); border-color: rgba(255, 197, 49, .3); }
+      .ft-1 { top: 6%; left: 0; }
+      .ft-2 { bottom: 10%; right: 0; }
+      @media (max-width: 480px) { .ft-1 { left: -4px; } .ft-2 { right: -4px; } }
+
+      /* ---------- marquee ---------- */
+      .marquee {
+        margin-top: 64px; border-block: 1px solid var(--line-soft);
+        background: rgba(8, 11, 22, .65); overflow: hidden; white-space: nowrap;
+        padding: 14px 0;
+      }
+      .marquee-track { display: inline-flex; gap: 0; width: max-content; max-width: none; animation: marquee 30s linear infinite; will-change: transform; }
+      .marquee span {
+        font-family: "JetBrains Mono", monospace; font-size: 13.5px; font-weight: 700;
+        letter-spacing: .18em; color: var(--ink-dim); padding: 0 26px;
+      }
+      .marquee span i { color: var(--gold); font-style: normal; padding-right: 26px; }
+      @keyframes marquee { to { transform: translateX(-50%); } }
+
+      /* ---------- sections ---------- */
+      section { padding: 92px 0 8px; }
+      .sec-head { max-width: 44rem; }
+      .sec-tag {
+        font-family: "JetBrains Mono", monospace; font-size: 12px; font-weight: 700;
+        letter-spacing: .24em; color: var(--cyan-hot);
+      }
+      h2 {
+        font-family: "Orbitron", sans-serif; font-weight: 800; text-transform: uppercase;
+        font-size: clamp(28px, 4vw, 42px); line-height: 1.12; margin: 14px 0 12px;
+      }
+      .sec-sub { color: var(--ink-dim); font-size: 18px; margin: 0; }
+
+      .js .reveal { opacity: 0; transform: translateY(36px) rotateX(16deg) scale(.97); transform-origin: 50% 100%; transition: opacity .8s ease, transform .8s cubic-bezier(.2,.7,.2,1), border-color .3s ease, box-shadow .3s ease; }
+      .js .reveal.in, .reveal { opacity: 1; transform: none; }
+      .js .reveal.in { opacity: 1; transform: none; }
+
+      /* video */
+      .video-frame {
+        margin-top: 44px; border-radius: 26px; overflow: hidden; position: relative;
+        border: 1px solid rgba(34, 216, 242, .4);
+        box-shadow: 0 30px 70px rgba(0,0,0,.55), 0 0 60px rgba(34,216,242,.14);
+        background: #000;
+        max-width: 470px; margin-inline: auto;
+      }
+      .video-frame video { width: 100%; height: auto; display: block; aspect-ratio: 640 / 1168; background: #000; }
+      .video-quote {
+        margin: 26px auto 0; max-width: 44rem; text-align: center;
+        font-size: 19px; font-weight: 700; color: var(--ink);
+      }
+      .video-quote span { color: var(--cyan-hot); }
+      .video-quote small { display: block; margin-top: 8px; font-size: 14.5px; font-weight: 600; color: var(--ink-faint); }
+
+      /* steps */
+      .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 44px; }
+      @media (max-width: 860px) { .steps { grid-template-columns: 1fr; } }
+      .step {
+        background: linear-gradient(180deg, var(--panel-2), var(--panel));
+        border: 1px solid var(--line-soft); border-radius: var(--radius); padding: 30px 28px;
+        position: relative; overflow: hidden;
+      }
+      .step::before {
+        content: ""; position: absolute; inset: 0 0 auto 0; height: 1px;
+        background: linear-gradient(90deg, transparent, var(--cyan), transparent); opacity: .5;
+      }
+      .step .num {
+        font-family: "Orbitron", sans-serif; font-weight: 900; font-size: 44px;
+        color: transparent; -webkit-text-stroke: 1.5px rgba(94, 234, 255, .55);
+      }
+      .step h3 { font-size: 20px; margin: 14px 0 8px; font-weight: 800; }
+      .step p { color: var(--ink-dim); margin: 0; font-size: 16px; }
+
+      /* features */
+      .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 44px; }
+      @media (max-width: 960px) { .features { grid-template-columns: repeat(2, 1fr); } }
+      @media (max-width: 600px) { .features { grid-template-columns: 1fr; } }
+      .feature { border: 1px solid var(--line-soft); border-radius: var(--radius); padding: 26px; background: rgba(11, 15, 30, .55); }
+      .feature .icon {
+        width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center;
+        background: rgba(34, 216, 242, .1); border: 1px solid var(--line); color: var(--cyan-hot);
+      }
+      .feature h3 { font-size: 18px; margin: 16px 0 6px; font-weight: 800; }
+      .feature p { color: var(--ink-dim); margin: 0; font-size: 15.5px; }
+
+      /* use cases */
+      .cases { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 36px; }
+      .case {
+        font-weight: 700; font-size: 15px; color: var(--ink);
+        border: 1px solid var(--line-soft); background: rgba(11, 15, 30, .55);
+        padding: 11px 18px; border-radius: 999px;
+      }
+      .case b { color: var(--gold); font-weight: 800; }
+
+      /* ---------- pricing ---------- */
+      .pricing { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 48px; align-items: stretch; }
+      @media (max-width: 900px) { .pricing { grid-template-columns: 1fr; max-width: 480px; } }
+      .pack {
+        border: 1px solid var(--line-soft); border-radius: 26px; padding: 34px 30px;
+        background: linear-gradient(180deg, var(--panel-2), var(--panel));
+        display: flex; flex-direction: column; position: relative;
+      }
+      .pack.hot {
+        border-color: rgba(34, 216, 242, .55);
+        box-shadow: 0 0 0 1px rgba(34,216,242,.25), 0 24px 60px rgba(0,0,0,.5), 0 0 50px rgba(34,216,242,.12);
+        transform: translateY(-10px);
+      }
+      @media (max-width: 900px) { .pack.hot { transform: none; } }
+      .pack .badge {
+        position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+        font-family: "JetBrains Mono", monospace; font-size: 11.5px; font-weight: 700; letter-spacing: .14em;
+        background: var(--cyan); color: #02141a; padding: 6px 14px; border-radius: 999px; white-space: nowrap;
+      }
+      .pack .badge.gold { background: var(--gold); }
+      .pack h3 { font-family: "Orbitron", sans-serif; font-size: 19px; margin: 4px 0 2px; text-transform: uppercase; letter-spacing: .04em; }
+      .pack .qty { color: var(--ink-faint); font-weight: 600; font-size: 14.5px; }
+      .price { font-family: "Orbitron", sans-serif; font-weight: 900; font-size: 54px; margin: 18px 0 2px; line-height: 1; }
+      .price sup { font-size: 24px; vertical-align: super; }
+      .per { color: var(--ink-dim); font-weight: 600; font-size: 15px; }
+      .save {
+        display: inline-block; margin-top: 12px; font-family: "JetBrains Mono", monospace;
+        font-size: 12.5px; font-weight: 700; color: var(--green);
+        border: 1px solid rgba(52, 211, 153, .35); background: rgba(52, 211, 153, .08);
+        padding: 5px 11px; border-radius: 999px;
+      }
+      .pack ul { list-style: none; padding: 0; margin: 22px 0 28px; display: grid; gap: 11px; color: var(--ink-dim); font-size: 15.5px; }
+      .pack li { display: flex; gap: 10px; align-items: flex-start; }
+      .pack li svg { flex: none; margin-top: 3px; color: var(--cyan); }
+      .pack .btn { justify-content: center; margin-top: auto; }
+      .btn-outline { border: 1px solid var(--line); color: var(--ink); background: transparent; }
+      .btn-outline:hover { border-color: var(--cyan); color: var(--cyan-hot); }
+      .pricing-note { text-align: center; color: var(--ink-faint); font-size: 15px; margin-top: 26px; }
+      .pricing-note strong { color: var(--ink-dim); }
+
+      /* ---------- full lineup / catalog ---------- */
+      .lineup-photo { margin-top: 40px; border-radius: 26px; overflow: hidden; border: 1px solid var(--line-soft); box-shadow: 0 24px 60px rgba(0,0,0,.5); background: #fff; }
+      .lineup-photo img { width: 100%; height: auto; }
+      .cat-sub {
+        font-family: "Orbitron", sans-serif; font-size: 20px; font-weight: 800;
+        text-transform: uppercase; letter-spacing: .04em; margin: 52px 0 0;
+      }
+      .cat-sub span { color: var(--cyan-hot); }
+      .catalog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 26px; perspective: 1400px; }
+      .catalog-grid.plaques { grid-template-columns: repeat(2, 1fr); max-width: 760px; }
+      @media (max-width: 960px) { .catalog-grid { grid-template-columns: repeat(2, 1fr); } }
+      @media (max-width: 560px) { .catalog-grid { gap: 12px; } .catalog-grid.plaques { grid-template-columns: 1fr; } }
+      .prod {
+        border: 1px solid var(--line-soft); border-radius: var(--radius);
+        background: linear-gradient(180deg, var(--panel-2), var(--panel));
+        padding: 16px; display: flex; flex-direction: column;
+      }
+      .js .reveal.in.prod:hover {
+        transform: translateY(-7px) rotateX(3deg);
+        border-color: rgba(34,216,242,.45);
+        box-shadow: 0 22px 44px rgba(0,0,0,.45), 0 0 34px rgba(34,216,242,.12);
+      }
+      .prod .shot { border-radius: 14px; overflow: hidden; background: #fff; }
+      .prod .shot img { width: 100%; height: auto; }
+      .prod h3 { font-size: 17px; margin: 16px 0 4px; font-weight: 800; line-height: 1.3; }
+      .prod p { color: var(--ink-dim); font-size: 14.5px; margin: 0; }
+      .prod .p-price {
+        font-family: "JetBrains Mono", monospace; font-size: 12.5px; font-weight: 700;
+        color: var(--gold); letter-spacing: .02em; margin: auto 0 12px; padding-top: 14px;
+      }
+      .prod .btn { justify-content: center; padding: 12px 16px; font-size: 15px; }
+      @media (max-width: 560px) { .prod .btn { font-size: 14px; padding: 11px 10px; } .prod h3 { font-size: 15.5px; } }
+      .mixmatch { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 26px; }
+      @media (max-width: 700px) { .mixmatch { grid-template-columns: 1fr; } }
+      .mm-pack {
+        border: 1px solid rgba(34, 216, 242, .35); border-radius: var(--radius); padding: 24px 26px;
+        background: rgba(11, 15, 30, .55); display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px;
+      }
+      .mm-pack b { font-family: "Orbitron", sans-serif; font-size: 19px; text-transform: uppercase; }
+      .mm-pack span { color: var(--ink-dim); font-size: 14.5px; font-weight: 600; }
+      .mm-pack .save { margin-top: 0; }
+      .mm-pack .btn { margin-left: auto; padding: 12px 20px; font-size: 15px; }
+
+      /* ---------- FAQ ---------- */
+      .faq { margin-top: 40px; border-top: 1px solid var(--line-soft); }
+      .faq-item { border-bottom: 1px solid var(--line-soft); }
+      .faq-q {
+        width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 18px;
+        background: none; border: 0; color: var(--ink); cursor: pointer; text-align: left;
+        font-family: "Manrope", sans-serif; font-size: 18px; font-weight: 700; padding: 24px 4px;
+      }
+      .faq-q .chev { flex: none; color: var(--cyan); transition: transform .3s ease; }
+      .faq-item.open .chev { transform: rotate(45deg); }
+      .faq-a { max-height: 0; overflow: hidden; transition: max-height .35s ease; }
+      .faq-a p { color: var(--ink-dim); margin: 0; padding: 0 4px 24px; max-width: 46rem; }
+
+      /* ---------- legal ---------- */
+      .legal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 44px; align-items: start; }
+      @media (max-width: 860px) { .legal-grid { grid-template-columns: 1fr; } }
+      .legal-card {
+        border: 1px solid var(--line-soft); border-radius: var(--radius); padding: 30px 28px;
+        background: rgba(11, 15, 30, .55);
+      }
+      .legal-card h3 {
+        font-family: "Orbitron", sans-serif; font-size: 17px; text-transform: uppercase;
+        letter-spacing: .05em; margin: 0 0 6px;
+      }
+      .legal-card .eff { color: var(--ink-faint); font-size: 13px; font-weight: 600; margin: 0 0 18px; }
+      .legal-card h4 { font-size: 15.5px; margin: 20px 0 5px; font-weight: 800; color: var(--ink); }
+      .legal-card h4:first-of-type { margin-top: 0; }
+      .legal-card p, .legal-card li { color: var(--ink-dim); font-size: 14.5px; line-height: 1.65; }
+      .legal-card p { margin: 0; }
+      .legal-card ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 5px; }
+      .sales-final {
+        border: 1px solid rgba(255, 197, 49, .45); background: rgba(255, 197, 49, .07);
+        border-radius: 14px; padding: 16px 18px; margin: 0 0 20px;
+        font-weight: 800; color: var(--ink); font-size: 15.5px;
+      }
+      .sales-final b { color: var(--gold); }
+
+      /* ---------- final CTA / footer ---------- */
+      .final {
+        margin-top: 92px; border: 1px solid rgba(34, 216, 242, .35); border-radius: 30px;
+        padding: clamp(36px, 6vw, 64px); text-align: center; position: relative; overflow: hidden;
+        background:
+          radial-gradient(600px 300px at 50% -20%, rgba(34,216,242,.18), transparent 65%),
+          linear-gradient(180deg, var(--panel-2), var(--panel));
+      }
+      .final h2 { margin-top: 0; }
+      .final p { color: var(--ink-dim); max-width: 36rem; margin: 0 auto; font-size: 18px; }
+      .final .hero-ctas { justify-content: center; }
+      .stars-row { display: flex; justify-content: center; gap: 6px; margin-bottom: 22px; color: var(--gold); }
+      footer { padding: 44px 0 54px; text-align: center; color: var(--ink-faint); font-size: 14.5px; }
+      footer a { color: var(--cyan-hot); text-decoration: none; font-weight: 700; }
+      footer .foot-links { display: flex; justify-content: center; gap: 26px; flex-wrap: wrap; margin-bottom: 14px; }
+
+      /* ---------- language toggle ---------- */
+      .nav-actions { display: flex; align-items: center; gap: 12px; }
+      .lang-toggle {
+        display: inline-flex; align-items: center; gap: 2px;
+        font-family: "JetBrains Mono", monospace; font-size: 12.5px; font-weight: 700; letter-spacing: .06em;
+        background: rgba(11, 15, 30, .7); border: 1px solid var(--line); border-radius: 999px;
+        padding: 4px; cursor: pointer; color: var(--ink-faint);
+      }
+      .lang-toggle .opt { padding: 6px 13px; border-radius: 999px; transition: background .2s ease, color .2s ease; }
+      .lang-toggle .opt.on { background: var(--cyan); color: #02141a; }
+
+      /* ---------- buy now (card checkout) ---------- */
+      .btn-stack { display: grid; gap: 10px; }
+      .pack .btn-stack { margin-top: auto; }
+      .pack .btn-stack .btn { margin-top: 0; }
+      .btn-buy {
+        background: var(--gold); color: #231a00; justify-content: center;
+        box-shadow: 0 0 24px rgba(255, 197, 49, .3);
+      }
+      .btn-buy:hover { transform: translateY(-2px); box-shadow: 0 0 38px rgba(255, 197, 49, .5); }
+      .mm-btns { margin-left: auto; display: flex; gap: 10px; flex-wrap: wrap; }
+      .mm-pack .btn { margin-left: 0; }
+      @media (max-width: 700px) { .mm-btns { margin-left: 0; width: 100%; } .mm-btns .btn { flex: 1; justify-content: center; } }
+
+      /* ---------- payback + territory ---------- */
+      .payback {
+        margin: 0 0 22px; border: 1px solid rgba(52, 211, 153, .4); background: rgba(52, 211, 153, .08);
+        border-radius: 14px; padding: 14px 16px; font-size: 15px; font-weight: 700; color: var(--ink);
+      }
+      .payback b { color: var(--green); font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: .12em; display: block; margin-bottom: 5px; }
+      .territory {
+        margin-top: 26px; border: 1px solid rgba(255, 197, 49, .45); border-radius: var(--radius);
+        padding: 26px 28px; background: rgba(255, 197, 49, .06);
+        display: flex; flex-wrap: wrap; align-items: center; gap: 14px 24px;
+      }
+      .territory p { margin: 0; flex: 1 1 320px; font-size: 17px; color: var(--ink-dim); }
+      .territory p strong { color: var(--ink); display: block; font-size: 19px; margin-bottom: 3px; }
+      .territory .btn { flex: none; }
+
+      /* ---------- legal: Spanish reference note ---------- */
+      .es-note {
+        border: 1px dashed rgba(94, 234, 255, .4); background: rgba(34, 216, 242, .06);
+        border-radius: 12px; padding: 12px 15px; margin: 0 0 18px;
+        font-size: 13.5px; color: var(--ink-dim);
+      }
+
+      /* ---------- 3D & motion layer ---------- */
+      #starfield { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+      .spotlight {
+        position: fixed; left: -600px; top: -600px; width: 560px; height: 560px; z-index: 3;
+        pointer-events: none; border-radius: 50%;
+        background: radial-gradient(circle, rgba(34,216,242,.13), rgba(34,216,242,.05) 42%, transparent 66%);
+        transform: translate(-50%, -50%); opacity: 0; transition: opacity .6s ease;
+        mix-blend-mode: screen;
+      }
+      body.spot-on .spotlight { opacity: 1; }
+
+      .hero { position: relative; }
+      .hero-grid { perspective: 1200px; }
+      .aurora { position: absolute; border-radius: 50%; filter: blur(70px); pointer-events: none; opacity: .55; z-index: 0; }
+      .aurora.a1 { width: 480px; height: 480px; background: radial-gradient(circle, rgba(34,216,242,.35), transparent 70%); top: -170px; right: -90px; animation: drift 14s ease-in-out infinite alternate; }
+      .aurora.a2 { width: 430px; height: 430px; background: radial-gradient(circle, rgba(66,133,244,.32), transparent 70%); bottom: -190px; left: -110px; animation: drift 18s ease-in-out infinite alternate-reverse; }
+      @keyframes drift { from { transform: translate(0,0) scale(1); } to { transform: translate(-60px, 44px) scale(1.16); } }
+      .hero-grid > * { position: relative; z-index: 1; }
+
+      @keyframes heroIn { from { opacity: 0; transform: translateY(30px) rotateX(18deg); } to { opacity: 1; transform: none; } }
+      .kicker { animation: heroIn .9s cubic-bezier(.2,.7,.2,1) both; }
+      .hero h1 { animation: heroIn 1s .08s cubic-bezier(.2,.7,.2,1) both; }
+      .hero-sub { animation: heroIn .9s .22s cubic-bezier(.2,.7,.2,1) both; }
+      .hero .hero-ctas { animation: heroIn .9s .36s cubic-bezier(.2,.7,.2,1) both; }
+      .hero-stats { animation: heroIn .9s .5s cubic-bezier(.2,.7,.2,1) both; }
+      .stage { animation: heroIn 1.1s .25s cubic-bezier(.2,.7,.2,1) both; }
+
+      /* hero card: constant 3D float (works on touch too), pointer tilt layers on top */
+      .card3d { animation: cardFloat 7s ease-in-out infinite; transform-style: preserve-3d; will-change: transform; }
+      @keyframes cardFloat {
+        0%, 100% { transform: translateY(0) rotateY(-7deg) rotateX(3deg); }
+        50% { transform: translateY(-16px) rotateY(7deg) rotateX(-3deg); }
+      }
+      .float-tag { animation: tagBob 5s ease-in-out infinite; }
+      .ft-2 { animation-delay: -2.5s; }
+      @keyframes tagBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+
+      /* shine sweep on primary buttons */
+      .btn-primary, .nav-cta { position: relative; overflow: hidden; }
+      .btn-primary::after, .nav-cta::after {
+        content: ""; position: absolute; inset: 0; pointer-events: none;
+        background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,.55) 50%, transparent 70%);
+        transform: translateX(-130%); animation: shine 3.4s ease-in-out infinite;
+      }
+      @keyframes shine { 0%, 55% { transform: translateX(-130%); } 88%, 100% { transform: translateX(130%); } }
+
+      /* 3D perspective entrances + hover physics on cards */
+      .steps, .features, .pricing { perspective: 1400px; }
+      .js .reveal.in.pack.hot { transform: translateY(-10px); }
+      .js .reveal.in.step:hover, .js .reveal.in.feature:hover {
+        transform: translateY(-7px) rotateX(3deg);
+        border-color: rgba(34,216,242,.45);
+        box-shadow: 0 22px 44px rgba(0,0,0,.45), 0 0 34px rgba(34,216,242,.12);
+      }
+      .js .reveal.in.pack:hover { transform: translateY(-8px); box-shadow: 0 26px 55px rgba(0,0,0,.5), 0 0 40px rgba(34,216,242,.12); }
+      .js .reveal.in.pack.hot:hover { transform: translateY(-18px); box-shadow: 0 0 0 1px rgba(34,216,242,.3), 0 30px 60px rgba(0,0,0,.55), 0 0 60px rgba(34,216,242,.2); }
+      @media (max-width: 900px) { .js .reveal.in.pack.hot, .js .reveal.in.pack.hot:hover { transform: none; } }
+      .feature .icon { transition: transform .45s cubic-bezier(.34,1.56,.64,1); }
+      .feature:hover .icon { transform: rotate(-8deg) scale(1.14); }
+      .case { transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease; }
+      .case:hover { transform: translateY(-3px); border-color: rgba(255,197,49,.5); box-shadow: 0 10px 24px rgba(0,0,0,.4); }
+      .marquee:hover .marquee-track { animation-play-state: paused; }
+
+      /* video frame: breathing glow + JS 3D tilt */
+      .video-frame { animation: frameGlow 4.5s ease-in-out infinite; will-change: transform; }
+      @keyframes frameGlow {
+        0%, 100% { box-shadow: 0 30px 70px rgba(0,0,0,.55), 0 0 44px rgba(34,216,242,.12); }
+        50% { box-shadow: 0 30px 70px rgba(0,0,0,.55), 0 0 95px rgba(34,216,242,.32); }
+      }
+
+      /* final CTA stars pulse */
+      .stars-row svg { animation: starPulse 2.4s ease-in-out infinite; transform-origin: center; }
+      .stars-row svg:nth-child(2) { animation-delay: .15s; }
+      .stars-row svg:nth-child(3) { animation-delay: .3s; }
+      .stars-row svg:nth-child(4) { animation-delay: .45s; }
+      .stars-row svg:nth-child(5) { animation-delay: .6s; }
+      @keyframes starPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.22) rotate(6deg); } }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: .001s !important; animation-iteration-count: 1 !important; transition-duration: .001s !important; }
+        html { scroll-behavior: auto; }
+        .reveal { opacity: 1; transform: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="backdrop" aria-hidden="true"></div>
+    <canvas id="starfield" aria-hidden="true"></canvas>
+    <div class="spotlight" id="spotlight" aria-hidden="true"></div>
+
+    <nav>
+      <div class="wrap nav-in">
+        <div class="nav-links">
+          <a href="#watch">Watch it</a>
+          <a href="#how">How it works</a>
+          <a href="#why">Why TapReview</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#catalog">Full lineup</a>
+          <a href="#biz">Start this business</a>
+          <a href="#faq">FAQ</a>
+        </div>
+        <div class="nav-actions">
+          <button class="lang-toggle" id="langToggle" type="button" aria-label="Switch language — English / Español"><span class="opt on" data-lang-opt="en">EN</span><span class="opt" data-lang-opt="es">ES</span></button>
+          <a class="nav-cta" href="tel:+13057739417">CALL / TEXT 305-773-9417</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <header class="hero">
+      <div class="aurora a1" aria-hidden="true"></div>
+      <div class="aurora a2" aria-hidden="true"></div>
+      <div class="wrap hero-grid">
+        <div>
+          <span class="kicker"><span class="dot"></span> NFC REVIEW TECHNOLOGY</span>
+          <h1>One tap.<br /><span class="stars-line">Five stars.</span><br /><span class="tap-line">Zero friction.</span></h1>
+          <p class="hero-sub">
+            TapReview Pro is the tap card from the future. Your customer holds their phone to it and
+            your <strong>Google review page opens instantly</strong> — stars up, keyboard ready — while they're
+            still standing in front of you. No app. No QR-code hunting. No “search for us later.” <strong>They review you before they even leave.</strong>
+          </p>
+          <div class="hero-ctas">
+            <a class="btn btn-primary" href="#pricing">Get yours — from $22</a>
+            <a class="btn btn-ghost" href="#how">See how it works</a>
+          </div>
+          <div class="hero-stats">
+            <div class="stat"><b>&lt; 5 SEC</b><span>tap to review page</span></div>
+            <div class="stat"><b>$0 / MO</b><span>no subscription, ever</span></div>
+            <div class="stat"><b>∞ TAPS</b><span>unlimited, no battery</span></div>
+          </div>
+        </div>
+
+        <div class="stage" id="stage">
+          <div class="orbit o1" aria-hidden="true"></div>
+          <div class="orbit o2" aria-hidden="true"></div>
+          <div class="pulse-ring" aria-hidden="true"></div>
+          <div class="pulse-ring r2" aria-hidden="true"></div>
+          <div class="pulse-ring r3" aria-hidden="true"></div>
+          <div class="tilt" id="tilt">
+            <div class="card3d">
+              <img src="assets/tapcard.jpg" alt="TapReview Pro NFC tap card — blue and white card reading 'We would appreciate your Google review!' with five stars and a tap-to-rate graphic" width="1320" height="1215" />
+            </div>
+          </div>
+          <span class="float-tag ft-1">NFC CHIP INSIDE</span>
+          <span class="float-tag gold ft-2">★★★★★ GOOGLE READY</span>
+        </div>
+      </div>
+
+      <div class="marquee" aria-hidden="true">
+        <div class="marquee-track" id="marqueeTrack">
+          <span><i>◆</i>NO APP NEEDED</span><span><i>◆</i>WORKS ON IPHONE &amp; ANDROID</span><span><i>◆</i>NO MONTHLY FEES</span><span><i>◆</i>PRE-PROGRAMMED FOR YOU</span><span><i>◆</i>UNLIMITED TAPS</span><span><i>◆</i>REVIEWS IN UNDER 5 SECONDS</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- DEMO VIDEO -->
+    <section id="watch" style="padding-top:72px">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="sec-tag">// SEE IT IN ACTION</span>
+          <h2>Watch how it works</h2>
+          <p class="sec-sub">Real counter, real moment: she finishes shopping, steps up to pay, and the owner asks for one quick favor. Watch her tap her phone right on the plaque — review page open, stars tapped, done. And watch his face when it lands. <strong style="color:var(--ink)">Press play — sound on.</strong></p>
+        </div>
+        <div class="video-frame reveal">
+          <video controls loop playsinline preload="metadata" poster="assets/video-poster.jpg" aria-label="Video with sound: a customer finishes shopping and steps up to the counter; the owner asks her to please leave a Google review, she taps her phone on the TapReview Pro plaque, the review page opens on her phone, and they both smile">
+            <source src="assets/demo.mp4" type="video/mp4" />
+            Your browser can't play this video — but here's the short version: the owner asks for a review, the customer taps her phone on the plaque, and five stars go live in about five seconds.
+          </video>
+        </div>
+        <p class="video-quote reveal">“Hey, can you please leave us a review? <span>Just tap right there — it takes five seconds.</span>”
+          <small>That's the whole pitch. One line, one tap, one 5-star review — and one very happy owner — before your customer walks out the door.</small>
+        </p>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section id="how">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="sec-tag">// THE SYSTEM</span>
+          <h2>Three seconds. Three steps.</h2>
+          <p class="sec-sub">Asking for reviews the old way — “find us on Google later” — is dead. TapReview Pro catches the happy customer at the exact moment they're happiest: right in front of you.</p>
+        </div>
+        <div class="steps">
+          <article class="step reveal">
+            <div class="num">01</div>
+            <h3>Put it on the counter</h3>
+            <p>Your TapReview Pro arrives pre-programmed to your business's Google review page. Set it by the register, hand it over with the check, or keep it in your pocket on the job site.</p>
+          </article>
+          <article class="step reveal">
+            <div class="num">02</div>
+            <h3>Customer taps their phone</h3>
+            <p>One tap — that's it. The NFC chip wakes up with zero battery and fires your review page straight onto their screen. Nothing to download, nothing to type, nothing to search.</p>
+          </article>
+          <article class="step reveal">
+            <div class="num">03</div>
+            <h3>Five stars go live</h3>
+            <p>They tap the stars, drop a line, hit post. Fresh 5-star reviews stack up on your Google profile — the exact thing that pushes you up local search and brings the phone calls in.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHY -->
+    <section id="why">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="sec-tag">// THE HARDWARE</span>
+          <h2>Built like it came from 2030</h2>
+          <p class="sec-sub">This isn't a paper sign or a QR sticker that fades in the sun. It's a solid tap device engineered to live on your counter and work every single day.</p>
+        </div>
+        <div class="features">
+          <article class="feature reveal">
+            <div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 8.5a8 8 0 0 1 0 7"/><path d="M9.5 6a12 12 0 0 1 0 12"/><path d="M13 3.5a16 16 0 0 1 0 17"/><circle cx="4" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg></div>
+            <h3>True NFC tap tech</h3>
+            <p>A real NFC chip sealed inside — the same contactless tech as tap-to-pay. Bring a phone near, the review page opens. Under 5 seconds, every time.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg></div>
+            <h3>Every phone. No app.</h3>
+            <p>Works on iPhone and Android out of the box — no app download, no account, no login wall between your customer and your 5 stars.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.5H11L9.5 22 19 10h-6.5L13 2z"/></svg></div>
+            <h3>No battery. No charging.</h3>
+            <p>The chip is passive — it pulls power from the phone itself. It never dies, never needs a cable, and never takes a day off.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.6-6.3"/><path d="M21 3v6h-6"/></svg></div>
+            <h3>Reprogrammable link</h3>
+            <p>New location? New review page? The link on your TapReview Pro can be updated — you don't have to buy a new card to change where the tap lands.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 4 6v6c0 5 3.4 8.2 8 9.5C16.6 20.2 20 17 20 12V6l-8-3.5z"/><path d="m9 12 2 2 4-4.5"/></svg></div>
+            <h3>Zero monthly fees</h3>
+            <p>One payment and it's yours forever. No subscription, no per-review charges, no platform holding your link hostage.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.7 5.6 6.1.8-4.5 4.2 1.1 6L12 16.7 6.6 19.6l1.1-6L3.2 9.4l6.1-.8L12 3z"/></svg></div>
+            <h3>Programmed for you</h3>
+            <p>Send us your business name and we set the card to your Google review page before it ships. Open the box, put it on the counter, start collecting stars.</p>
+          </article>
+        </div>
+
+        <div class="sec-head reveal" style="margin-top:64px">
+          <span class="sec-tag">// DEPLOY ANYWHERE</span>
+          <h2>If customers check out, it works there</h2>
+        </div>
+        <div class="cases reveal">
+          <span class="case">Restaurants <b>&amp; cafés</b></span>
+          <span class="case">Barbershops <b>&amp; salons</b></span>
+          <span class="case">Auto shops <b>&amp; detailers</b></span>
+          <span class="case">Dental <b>&amp; medical offices</b></span>
+          <span class="case">Law firms</span>
+          <span class="case">Real estate <b>offices</b></span>
+          <span class="case">Contractors <b>&amp; home services</b></span>
+          <span class="case">Gyms <b>&amp; studios</b></span>
+          <span class="case">Retail <b>counters</b></span>
+          <span class="case">Food trucks</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING -->
+    <section id="pricing">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="sec-tag">// GET YOURS</span>
+          <h2>Pick your firepower</h2>
+          <p class="sec-sub">One card pays for itself with a single new customer. Packs cover every register, table, and crew — and the per-card price drops hard.</p>
+        </div>
+
+        <div class="pricing">
+          <article class="pack reveal">
+            <h3>Starter</h3>
+            <div class="qty">1 × TapReview Pro card</div>
+            <div class="price"><sup>$</sup>22</div>
+            <div class="per">$22 per card · one-time</div>
+            <ul>
+              <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-11"/></svg>Pre-programmed to your Google page</li>
+              <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-11"/></svg>Unlimited taps, no battery</li>
+              <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-11"/></svg>No app, no subscription</li>
+              <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-11"/></svg>Perfect for a single counter</li>
+            </ul>
+            <div class="btn-stack">
+              <a class="btn btn-buy" data-checkout="starter" href="sms:+13057739417?&body=Hi!%20I%20want%20to%20order%20the%20Starter%20—%201%20TapReview%20Pro%20card%20for%20%2422.">Buy Now — pay by card</a>
+              <a class="btn btn-outline" href="sms:+13057739417?&body=Hi!%20I%20want%20to%20order%20the%20Starter%20—%201%20TapReview%20Pro%20card%20for%20%2422.">Order 1 card</a>
+            </div>
+          </article>
+
+          <article class="pack hot reveal">
+            <span class="badge">MOST POPULAR</span>
+            <h3>Trio Pack</h3>
+            <div class="qty">3 × TapReview Pro cards</div>
+            <div class="price"><sup>$</sup>55</div>
+            <div class="per">Only $18.33 per card · one-time</div>
+            <span class="save">YOU SAVE $11 VS. SINGLES</span>
+            <ul>
+              <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-11"/></svg>Everything in Starter</li>
+              <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-11"/></svg>Cover the register, bar &amp; host stand</li>
+              <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-11"/></svg>Each card can point to a different location</li>
+              <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-11"/></svg>Best for one busy location</li>
+            </ul>
+            <div class="btn-stack">
+              <a class="btn btn-buy" data-checkout="trio" href="sms:+13057739417?&body=Hi!%20I%20want%20to%20order%20the%20Trio%20Pack%20—%203%20TapReview%20Pro%20cards%20for%20%2455.">Buy Now — pay by card</a>
+              <a class="btn btn-primary" href="sms:+13057739417?&body=Hi!%20I%20want%20to%20order%20the%20Trio%20Pack%20—%203%20TapReview%20Pro%20cards%20for%20%2455.">Order the 3-pack</a>
+            </div>
+          </article>
+
+          <article class="pack reveal">
+            <span class="badge gold">BEST VALUE</span>
+            <h3>Empire Pack</h3>
+            <div class="qty">10 × TapReview Pro cards</div>
+            <div class="price"><sup>$</sup>175</div>
+            <div class="per">Only $17.50 per card · one-time</div>
+            <span class="save">YOU SAVE $45 VS. SINGLES</span>
+            <ul>
+              <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-11"/></svg>Everything in Trio Pack</li>
+              <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-11"/></svg>Every table, truck &amp; crew covered</li>
+              <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-11"/></svg>Built for multi-location businesses</li>
+              <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-11"/></svg>Lowest price per card we offer</li>
+            </ul>
+            <div class="btn-stack">
+              <a class="btn btn-buy" data-checkout="empire" href="sms:+13057739417?&body=Hi!%20I%20want%20to%20order%20the%20Empire%20Pack%20—%2010%20TapReview%20Pro%20cards%20for%20%24175.">Buy Now — pay by card</a>
+              <a class="btn btn-outline" href="sms:+13057739417?&body=Hi!%20I%20want%20to%20order%20the%20Empire%20Pack%20—%2010%20TapReview%20Pro%20cards%20for%20%24175.">Order the 10-pack</a>
+            </div>
+          </article>
+        </div>
+
+        <p class="pricing-note reveal"><strong>How ordering works:</strong> tap a button to text us your order, or call <a href="tel:+13057739417" style="color:var(--cyan-hot);font-weight:700;text-decoration:none">305-773-9417</a>. Send your business name, we program your cards to your Google review page, and they ship ready to tap. <strong>One-time payment — no subscription, ever. All sales are final — no exchanges, no refunds.</strong></p>
+      </div>
+    </section>
+
+    <!-- FULL LINEUP -->
+    <section id="catalog">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="sec-tag">// TAP TO FOLLOW</span>
+          <h2>The full lineup — every platform, one tap</h2>
+          <p class="sec-sub">Reviews were just the beginning. The same tap tech now grows your followers and opens direct chats: counter plaques that pull Instagram and Facebook follows, and pocket-size tap cards for nine platforms. <strong style="color:var(--ink)">Same prices as the flagship plaque — $22 each, Trio $55, Empire $175</strong> — and Trio and Empire packs mix &amp; match any products in the lineup.</p>
+        </div>
+
+        <figure class="lineup-photo reveal" style="margin-left:0;margin-right:0">
+          <img src="assets/lineup.jpg" alt="The full TapReview Pro lineup photographed together: Instagram and Facebook Follow counter plaques beside tap cards for Google Reviews, Instagram, Facebook, TikTok, WhatsApp, Tripadvisor, YouTube, and Yelp" width="1320" height="1143" />
+        </figure>
+
+        <h3 class="cat-sub reveal">Counter plaques — <span>tap to follow</span></h3>
+        <div class="catalog-grid plaques">
+          <article class="prod reveal">
+            <div class="shot"><img src="assets/instagram-plaque.jpg" alt="Instagram Follow counter plaque — purple-to-orange gradient plaque reading 'Tap to Follow — Follow Us on Instagram!' with the Instagram logo" width="1320" height="1415" /></div>
+            <h3>Instagram Follow Plaque</h3>
+            <p>The big gradient counter plaque. A customer's tap lands them right on your Instagram profile — new follower before they walk out the door.</p>
+            <div class="p-price">$22 EACH · TRIO $55 · EMPIRE $175</div>
+            <div class="btn-stack">
+              <a class="btn btn-buy" data-checkout="plaque-instagram" href="sms:+13057739417?&body=Hi!%20I%20want%20to%20order%20the%20Instagram%20Follow%20Plaque%20—%201%20for%20%2422.">Buy Now — pay by card</a>
+              <a class="btn btn-outline" href="sms:+13057739417?&body=Hi!%20I%20want%20to%20order%20the%20Instagram%20Follow%20Plaque%20—%201%20for%20%2422.">Order this plaque</a>
+            </div>
+          </article>
+          <article class="prod reveal">
+            <div class="shot"><img src="assets/fb-plaque.jpg" alt="Facebook Follow counter plaque — blue plaque reading 'Follow Us on Facebook!' with the Facebook logo and 'Tap to follow us'" width="480" height="515" /></div>
+            <h3>Facebook Follow Plaque</h3>
+            <p>The blue counter plaque for your Facebook Page. One tap opens your page, ready to follow — perfect by the register or the front desk.</p>
+            <div class="p-price">$22 EACH · TRIO $55 · EMPIRE $175</div>
+            <div class="btn-stack">
+              <a class="btn btn-buy" data-checkout="plaque-facebook" href="sms:+13057739417?&body=Hi!%20I%20want%20to%20order%20the%20Facebook%20Follow%20Plaque%20—%201%20for%20%2422.">Buy Now — pay by card</a>
+              <a class="btn btn-outline" href="sms:+13057739417?&body=Hi!%20I%20want%20to%20order%20the%20Facebook%20Follow%20Plaque%20—%201%20for%20%2422.">Order this plaque</a>
+            </div>
+          </article>
+        </div>
+
+        <h3 class="cat-sub reveal">Tap cards — <span>wallet-size, every platform</span></h3>
+        <div class="catalog-grid">
+          <article class="prod reveal">
+            <div class="shot"><img src="assets/card-google-black.jpg" alt="Google Review tap card, black edition — black card with the Google G, five stars, and 'Review us on Google'" width="200" height="295" /></div>
+            <h3>Google Review Card — Black</h3>
+            <p>The flagship move in card form. A tap opens your Google review page, stars up, keyboard ready.</p>
+            <div class="p-price">$22 EACH · TRIO $55 · EMPIRE $175</div>
+            <div class="btn-stack">
+              <a class="btn btn-buy" data-checkout="card-google-black" href="sms:+13057739417?&body=Hi!%20I%20want%20to%20order%20the%20Google%20Review%20Card%20(Black)%20—%201%20for%20%2422.">Buy Now — pay by card</a>
+              <a class="btn btn-outline" href="sms:+13057739417?&body=Hi!%20I%20want%20to%20order%20the%20Google%20Review%20Card%20(Black)%20—%201%20for%20%2422.">Order this card</a>
+            </div>
+          </article>
+          <article class="prod reveal">
+            <div class="shot"><img src="assets/card-google-white.jpg" alt="Google Review tap card, white edition — white card with the Google G, five stars, and 'Review us on Google'" width="200" height="295" /></div>
+            <h3>Google Review Card — White</h3>
+            <p>Same five-star firepower, clean white edition. Programmed to your Google review page before it ships.</p>
+            <div class="p-price">$22 EACH · TRIO $55 · EMPIRE $175</div>
+            <div class="btn-stack">
+              <a class="btn btn-buy" data-checkout="card-google-white" href="sms:+13057739417?&body=Hi!%20I%20want%20to%20order%20the%20Google%20Review%20Card%20(White)%20—%201%20for%20%2422.">Buy Now — pay by card</a>
+              <a class="btn btn-outline" href="sms:+13057739417?&body=Hi!%20I%20want%20to%20order%20the%20Google%20Review%20Card%20(White)%20—%201%20for%20%2422.">Order this card</a>
+            </div>
+          </article>
+          <article class="prod reveal">
+            <div class="shot"><img src="assets/card-instagram.jpg" alt="Instagram tap card — gradient card with the Instagram logo and NFC symbol" width="195" height="295" /></div>
+            <h3>Instagram Follow Card</h3>
+            <p>Pocket-size follow machine. Hand it over, they tap, your Instagram profile opens — follow in one touch.</p>
+            <div class="p-price">$22 EACH · TRIO $55 · EMPIRE $175</div>
+            <div class="btn-stack">
+              <a class="btn btn-buy" data-checkout="card-instagram" href="sms:+13057739417?&body=Hi!%20I%20want%20to%20order%20the%20Instagram%20Follow%20Card%20—%201%20for%20%2422.">Buy Now — pay by card</a>
+              <a class="btn btn-outline" href="sms:+13057739417?&body=Hi!%20I%20want%20to%20order%20the%20Instagram%20Follow%20Card%20—%201%20for%20%2422.">Order this card</a>
+            </div>
+          </article>
+          <article class="prod reveal">
+            <div class="shot"><img src="assets/card-facebook.jpg" alt="Facebook tap card — blue card with the Facebook logo and NFC symbol" width="190" height="295" /></div>
+            <h3>Facebook Follow Card</h3>
+            <p>A tap opens your Facebook Page, ready to follow. Built for counters, tables, and crews on the move.</p>
+            <div class="p-price">$22 EACH · TRIO $55 · EMPIRE $175</div>
+            <div class="btn-stack">
+              <a class="btn btn-buy" data-checkout="card-facebook" href="sms:+13057739417?&body=Hi!%20I%20want%20to%20order%20the%20Facebook%20Follow%20Card%20—%201%20for%20%2422.">Buy Now — pay by card</a>
+              <a class="btn btn-outline" href="sms:+13057739417?&body=Hi!%20I%20want%20to%20order%20the%20Facebook%20Follow%20Card%20—%201%20for%20%2422.">Order this card</a>
+            </div>
+          </article>
+          <article class="prod reveal">
+            <div class="shot"><img src="assets/card-tiktok.jpg" alt="TikTok tap card — black card with the TikTok logo" width="190" height="295" /></div>
+            <h3>TikTok Follow Card</h3>
+            <p>One tap opens your TikTok profile. Turn every happy customer into a follower while the moment is hot.</p>
+            <div class="p-price">$22 EACH · TRIO $55 · EMPIRE $175</div>
+            <div class="btn-stack">
+              <a class="btn btn-buy" data-checkout="card-tiktok" href="sms:+13057739417?&body=Hi!%20I%20want%20to%20order%20the%20TikTok%20Follow%20Card%20—%201%20for%20%2422.">Buy Now — pay by card</a>
+              <a class="btn btn-outline" href="sms:+13057739417?&body=Hi!%20I%20want%20to%20order%20the%20TikTok%20Follow%20Card%20—%201%20for%20%2422.">Order this card</a>
+            </div>
+          </article>
+          <article class="prod reveal">
+            <div class="shot"><img src="assets/card-whatsapp.jpg" alt="WhatsApp tap card — dark blue card with the WhatsApp logo" width="190" height="295" /></div>
+            <h3>WhatsApp Chat Card</h3>
+            <p>A tap opens a WhatsApp chat with your business. Questions become conversations — and conversations become customers.</p>
+            <div class="p-price">$22 EACH · TRIO $55 · EMPIRE $175</div>
+            <div class="btn-stack">
+              <a class="btn btn-buy" data-checkout="card-whatsapp" href="sms:+13057739417?&body=Hi!%20I%20want%20to%20order%20the%20WhatsApp%20Chat%20Card%20—%201%20for%20%2422.">Buy Now — pay by card</a>
+              <a class="btn btn-outline" href="sms:+13057739417?&body=Hi!%20I%20want%20to%20order%20the%20WhatsApp%20Chat%20Card%20—%201%20for%20%2422.">Order this card</a>
+            </div>
+          </article>
+          <article class="prod reveal">
+            <div class="shot"><img src="assets/card-tripadvisor.jpg" alt="Tripadvisor tap card — green and white card with the Tripadvisor owl logo and five stars" width="200" height="295" /></div>
+            <h3>Tripadvisor Review Card</h3>
+            <p>For restaurants, tours, hotels, and attractions — a tap opens your Tripadvisor page, ready for the review.</p>
+            <div class="p-price">$22 EACH · TRIO $55 · EMPIRE $175</div>
+            <div class="btn-stack">
+              <a class="btn btn-buy" data-checkout="card-tripadvisor" href="sms:+13057739417?&body=Hi!%20I%20want%20to%20order%20the%20Tripadvisor%20Review%20Card%20—%201%20for%20%2422.">Buy Now — pay by card</a>
+              <a class="btn btn-outline" href="sms:+13057739417?&body=Hi!%20I%20want%20to%20order%20the%20Tripadvisor%20Review%20Card%20—%201%20for%20%2422.">Order this card</a>
+            </div>
+          </article>
+          <article class="prod reveal">
+            <div class="shot"><img src="assets/card-youtube.jpg" alt="YouTube tap card — black card with the YouTube play button logo and NFC symbol" width="190" height="295" /></div>
+            <h3>YouTube Subscribe Card</h3>
+            <p>A tap opens your channel — new subscribers while they wait, straight from the counter.</p>
+            <div class="p-price">$22 EACH · TRIO $55 · EMPIRE $175</div>
+            <div class="btn-stack">
+              <a class="btn btn-buy" data-checkout="card-youtube" href="sms:+13057739417?&body=Hi!%20I%20want%20to%20order%20the%20YouTube%20Subscribe%20Card%20—%201%20for%20%2422.">Buy Now — pay by card</a>
+              <a class="btn btn-outline" href="sms:+13057739417?&body=Hi!%20I%20want%20to%20order%20the%20YouTube%20Subscribe%20Card%20—%201%20for%20%2422.">Order this card</a>
+            </div>
+          </article>
+          <article class="prod reveal">
+            <div class="shot"><img src="assets/card-yelp.jpg" alt="Yelp tap card — white card with the Yelp logo, five red stars, and NFC symbol" width="190" height="295" /></div>
+            <h3>Yelp Review Card</h3>
+            <p>A tap opens your Yelp page with the stars ready. Catch the review at the counter, not never.</p>
+            <div class="p-price">$22 EACH · TRIO $55 · EMPIRE $175</div>
+            <div class="btn-stack">
+              <a class="btn btn-buy" data-checkout="card-yelp" href="sms:+13057739417?&body=Hi!%20I%20want%20to%20order%20the%20Yelp%20Review%20Card%20—%201%20for%20%2422.">Buy Now — pay by card</a>
+              <a class="btn btn-outline" href="sms:+13057739417?&body=Hi!%20I%20want%20to%20order%20the%20Yelp%20Review%20Card%20—%201%20for%20%2422.">Order this card</a>
+            </div>
+          </article>
+        </div>
+
+        <div class="mixmatch">
+          <div class="mm-pack reveal">
+            <b>Trio — $55</b>
+            <span>Any 3 products, mix &amp; match · $18.33 each</span>
+            <span class="save">YOU SAVE $11</span>
+            <span class="mm-btns">
+              <a class="btn btn-buy" data-checkout="mix-trio" href="sms:+13057739417?&body=Hi!%20I%20want%20to%20order%20a%20Trio%20Pack%20—%203%20TapReview%20Pro%20products%20(mix%20%26%20match)%20for%20%2455.">Buy Now — pay by card</a>
+              <a class="btn btn-primary" href="sms:+13057739417?&body=Hi!%20I%20want%20to%20order%20a%20Trio%20Pack%20—%203%20TapReview%20Pro%20products%20(mix%20%26%20match)%20for%20%2455.">Order a Trio</a>
+            </span>
+          </div>
+          <div class="mm-pack reveal">
+            <b>Empire — $175</b>
+            <span>Any 10 products, mix &amp; match · $17.50 each</span>
+            <span class="save">YOU SAVE $45</span>
+            <span class="mm-btns">
+              <a class="btn btn-buy" data-checkout="mix-empire" href="sms:+13057739417?&body=Hi!%20I%20want%20to%20order%20an%20Empire%20Pack%20—%2010%20TapReview%20Pro%20products%20(mix%20%26%20match)%20for%20%24175.">Buy Now — pay by card</a>
+              <a class="btn btn-primary" href="sms:+13057739417?&body=Hi!%20I%20want%20to%20order%20an%20Empire%20Pack%20—%2010%20TapReview%20Pro%20products%20(mix%20%26%20match)%20for%20%24175.">Order an Empire</a>
+            </span>
+          </div>
+        </div>
+
+        <p class="pricing-note reveal">Every product is programmed to your page before it ships — your review page, profile, or chat link. No subscription, no app, no battery. <strong>All sales are final — no exchanges, no refunds</strong> — on every product in the lineup.</p>
+      </div>
+    </section>
+
+    <!-- START THIS BUSINESS -->
+    <section id="biz">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="sec-tag">// OWN THE BUSINESS</span>
+          <h2>Start this business</h2>
+          <p class="sec-sub">Don't just buy the cards — <strong style="color:var(--ink)">sell them</strong>. Interested in starting this business? Pick your level: supplier access and the full playbook, a done-for-you website, or 1-on-1 training with direct access to OE himself.</p>
+        </div>
+
+        <div class="pricing">
+          <article class="pack reveal">
+            <h3>Starter</h3>
+            <div class="qty">Start this business</div>
+            <div class="price"><sup>$</sup>399</div>
+            <div class="per">One-time · the full starter kit</div>
+            <ul>
+              <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-11"/></svg>Full access to our supplier</li>
+              <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-11"/></svg>Sales scripts that close</li>
+              <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-11"/></svg>Rebuttals for every objection</li>
+              <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-11"/></svg>Territories, and more</li>
+            </ul>
+            <p class="payback"><b>THE PAYBACK MATH</b>Sell just 19 cards at $22 and your $399 is paid back — everything after that is profit.</p>
+            <div class="btn-stack">
+              <a class="btn btn-buy" data-checkout="biz-starter" href="sms:+13057739417?&body=Hi!%20I'm%20interested%20in%20starting%20this%20business%20—%20the%20Starter%20package%20for%20%24399.">Buy Now — pay by card</a>
+              <a class="btn btn-outline" href="sms:+13057739417?&body=Hi!%20I'm%20interested%20in%20starting%20this%20business%20—%20the%20Starter%20package%20for%20%24399.">Start for $399</a>
+            </div>
+          </article>
+
+          <article class="pack hot reveal">
+            <span class="badge">MOST POPULAR</span>
+            <h3>Launch</h3>
+            <div class="qty">Everything + your website</div>
+            <div class="price"><sup>$</sup>899</div>
+            <div class="per">One-time · ready to sell online</div>
+            <ul>
+              <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-11"/></svg>Everything in Starter</li>
+              <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-11"/></svg>Done-for-you website</li>
+              <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-11"/></svg>Launch looking like a real brand from day one</li>
+            </ul>
+            <div class="btn-stack">
+              <a class="btn btn-buy" data-checkout="biz-launch" href="sms:+13057739417?&body=Hi!%20I'm%20interested%20in%20starting%20this%20business%20—%20the%20Launch%20package%20for%20%24899%20with%20the%20done-for-you%20website.">Buy Now — pay by card</a>
+              <a class="btn btn-primary" href="sms:+13057739417?&body=Hi!%20I'm%20interested%20in%20starting%20this%20business%20—%20the%20Launch%20package%20for%20%24899%20with%20the%20done-for-you%20website.">Launch for $899</a>
+            </div>
+          </article>
+
+          <article class="pack reveal">
+            <span class="badge gold">DIRECT ACCESS</span>
+            <h3>Mentorship</h3>
+            <div class="qty">Everything + 1-on-1 with OE</div>
+            <div class="price"><sup>$</sup>2,500</div>
+            <div class="per">One-time · the full package</div>
+            <ul>
+              <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-11"/></svg>Everything in Launch</li>
+              <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-11"/></svg>1-on-1 training via Zoom calls</li>
+              <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-11"/></svg>Direct access to OE</li>
+            </ul>
+            <div class="btn-stack">
+              <a class="btn btn-buy" data-checkout="biz-mentorship" href="sms:+13057739417?&body=Hi!%20I'm%20interested%20in%20starting%20this%20business%20—%20the%20Mentorship%20package%20for%20%242%2C500%20with%201-on-1%20Zoom%20training%20and%20direct%20access.">Buy Now — pay by card</a>
+              <a class="btn btn-outline" href="sms:+13057739417?&body=Hi!%20I'm%20interested%20in%20starting%20this%20business%20—%20the%20Mentorship%20package%20for%20%242%2C500%20with%201-on-1%20Zoom%20training%20and%20direct%20access.">Go all in — $2,500</a>
+            </div>
+          </article>
+        </div>
+
+        <p class="pricing-note reveal"><strong>How it works:</strong> tap a button to text us, or call <a href="tel:+13057739417" style="color:var(--cyan-hot);font-weight:700;text-decoration:none">305-773-9417</a>. Every package is a one-time payment. <strong>All sales are final — no exchanges, no refunds</strong> — on every business package, just like every product we sell.</p>
+
+        <div class="territory reveal">
+          <p><strong>Is your city still open?</strong>Territories are claimed first come, first served — once a city is taken, it's gone. Check yours before somebody else locks it down.</p>
+          <a class="btn btn-buy" href="sms:+13057739417?&body=TERRITORY">Text TERRITORY to 305-773-9417</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="sec-tag">// INTEL</span>
+          <h2>Questions, answered</h2>
+        </div>
+        <div class="faq reveal">
+          <div class="faq-item">
+            <button class="faq-q" aria-expanded="false">Does my customer need an app?<span class="chev"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button>
+            <div class="faq-a"><p>No. Modern iPhones and Android phones read NFC natively. Your customer holds their phone near the card and your Google review page opens in their browser — nothing to install, no account to create.</p></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" aria-expanded="false">How does the card know to open MY review page?<span class="chev"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button>
+            <div class="faq-a"><p>We program it for you before it ships. Send us your business name when you order and we find your Google review link and load it onto the chip. Open the box and it works — no setup on your end.</p></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" aria-expanded="false">Is there a monthly fee or per-review charge?<span class="chev"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button>
+            <div class="faq-a"><p>Never. You pay once — $22 for one card, $55 for three, $175 for ten — and the card is yours. Unlimited taps, unlimited reviews, no subscription holding your link hostage.</p></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" aria-expanded="false">What is your refund and exchange policy?<span class="chev"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button>
+            <div class="faq-a"><p><strong style="color:var(--ink)">All sales are final — no exchanges, no refunds.</strong> Every TapReview Pro is programmed to your business and tested before it ships, so please confirm your business name and Google review link when you order. The full terms are in the Terms &amp; Conditions section below.</p></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" aria-expanded="false">Can I change where the tap goes later?<span class="chev"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button>
+            <div class="faq-a"><p>Yes. The link stored on the chip can be updated — point it at a different location's review page or a new link without buying a new card. Text us and we'll walk you through it.</p></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" aria-expanded="false">Does it need batteries or charging?<span class="chev"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button>
+            <div class="faq-a"><p>No. NFC chips are passive — the phone powers the chip for the split second of the tap. There is literally nothing to charge and nothing to die at the worst moment.</p></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" aria-expanded="false">I have multiple locations. Which pack do I need?<span class="chev"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button>
+            <div class="faq-a"><p>The Empire Pack (10 cards, $175) is built for that — and each card can be programmed to a different location's Google page, so every storefront collects its own reviews. Running one busy spot? The Trio Pack covers your main touchpoints.</p></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" aria-expanded="false">What other tap products do you sell?<span class="chev"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button>
+            <div class="faq-a"><p>A full lineup at the same prices: Instagram and Facebook Follow counter plaques, plus pocket-size tap cards for Google Reviews (black or white), Instagram, Facebook, TikTok, WhatsApp, Tripadvisor, YouTube, and Yelp. Singles are $22, the Trio Pack is $55, and the Empire Pack is $175 — and Trio and Empire packs mix &amp; match any products in the lineup. Like everything we sell, <strong style="color:var(--ink)">all sales are final — no exchanges, no refunds</strong>.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TERMS & PRIVACY -->
+    <section id="terms">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="sec-tag">// THE FINE PRINT</span>
+          <h2>Terms &amp; privacy</h2>
+          <p class="sec-sub">Plain English, no surprises. By ordering a TapReview Pro, you agree to these terms.</p>
+        </div>
+        <div class="legal-grid">
+          <article class="legal-card reveal">
+            <h3>Terms &amp; Conditions</h3>
+            <p class="eff">TapReview Pro · tapreviewpro.us · Effective October 22, 2026</p>
+            <p class="es-note" hidden>Nota: Los Términos y Condiciones oficiales y legalmente vinculantes son la versión en inglés que aparece a continuación.</p>
+
+            <p class="sales-final"><b>ALL SALES ARE FINAL.</b> No exchanges. No refunds. Every order is confirmed by text or phone before we program and ship your cards, so please double-check your business name and Google review page before you order.</p>
+
+            <h4>1. What you're buying</h4>
+            <p>A physical NFC tap plaque/card, pre-programmed to open your business's Google review page when a customer taps it with a smartphone. Prices are in US dollars and are a one-time payment: $22 for 1 card, $55 for the Trio Pack (3 cards), $175 for the Empire Pack (10 cards). The same prices cover the full lineup — the Instagram and Facebook Follow counter plaques and every platform tap card (Google Review in black or white, Instagram, Facebook, TikTok, WhatsApp, Tripadvisor, YouTube, and Yelp) — and Trio and Empire Packs may mix and match any products in the lineup. There is no subscription and no per-review charge. Prices may change at any time; the price you confirm by text or phone when you order is the price you pay.</p>
+
+            <h4>2. Ordering &amp; payment</h4>
+            <p>Orders are placed by call or text to 305-773-9417. Payment is collected when your order is confirmed. Once payment is received, your cards are programmed to your Google review link and shipped.</p>
+
+            <h4>3. Your responsibilities</h4>
+            <ul>
+              <li>Provide the correct business name and/or Google review link. We program exactly what you give us. Errors in the information you provide are your responsibility — but tell us before your order ships and we'll fix it free.</li>
+              <li>Make sure your business has an active Google Business Profile with reviews enabled, so the tap has a page to open.</li>
+              <li>Use the card lawfully and honestly: ask real customers for honest reviews. Never offer money, discounts, or gifts in exchange for reviews, and never post or arrange fake reviews — that violates Google's policies and can get your profile penalized or removed. That's on you, not us.</li>
+            </ul>
+
+            <h4>4. Compatibility &amp; how NFC works</h4>
+            <p>The card has a passive NFC chip — no battery, no charging, unlimited taps. It works with NFC-enabled smartphones (most iPhones from the iPhone XR / XS onward and most modern Android phones) with NFC turned on. Very old phones, phones with NFC disabled, or a phone case that blocks the signal may not read the tap. The review page itself is provided by Google; you'll need mobile data or Wi-Fi for it to load.</p>
+
+            <h4>5. No guaranteed results</h4>
+            <p>TapReview Pro makes it faster and easier for happy customers to reach your review page. It does not — and cannot — guarantee any number of reviews, any star rating, any search ranking, or any increase in calls, customers, or revenue. Reviews are written by your customers, and Google controls how reviews are displayed, filtered, or removed.</p>
+
+            <h4>6. Link changes</h4>
+            <p>If your review link changes, text us at 305-773-9417 and we'll help you update where your card points, where the chip allows it. Reprogramming help is a courtesy, not a guarantee, and doesn't change the final-sale policy above.</p>
+
+            <h4>7. Not affiliated with Google</h4>
+            <p>TapReview Pro is an independent product sold by OE Marketing, LLC. It is not made by, endorsed by, or affiliated with Google LLC. Google and the Google “G” logo are trademarks of Google LLC, used here only to describe what the product works with.</p>
+
+            <h4>8. Liability</h4>
+            <p>The product is provided as described on this page. To the fullest extent allowed by law, our total liability for any claim connected to a purchase is limited to the amount you paid for that order. These terms are governed by the laws of the State of Florida.</p>
+
+            <h4>9. Changes to these terms</h4>
+            <p>We may update these terms at any time. The version posted on this page when you order is the version that applies to your order.</p>
+
+            <h4>10. Business-opportunity packages</h4>
+            <p>The Start This Business packages are one-time payments in US dollars: $399 for the Starter package (full access to our supplier, plus sales scripts, rebuttals, territory guidance, and related starter materials), $899 for the Launch package (everything in Starter, plus a done-for-you website), and $2,500 for the Mentorship package (everything in Launch, plus 1-on-1 training via Zoom calls and direct access to OE). These packages provide supplier access, materials, a website build, and training as described on this page. They are not a franchise, and they do not guarantee any income, sales, customers, or business results — your results depend on your own effort and market. <strong style="color:var(--ink)">All sales are final on business packages as well — no exchanges, no refunds.</strong></p>
+          </article>
+
+          <article class="legal-card reveal" id="privacy">
+            <h3>Privacy Policy</h3>
+            <p class="eff">How we handle your information · Effective October 22, 2026</p>
+            <p class="es-note" hidden>Nota: La Política de Privacidad oficial y legalmente vinculante es la versión en inglés que aparece a continuación.</p>
+
+            <h4>What we collect — and why</h4>
+            <ul>
+              <li><strong style="color:var(--ink)">Your name and phone number</strong> — to confirm your order, program your cards, and answer your questions. Ordering happens over calls and texts.</li>
+              <li><strong style="color:var(--ink)">Your business name and Google review link</strong> — this is literally what's programmed onto your cards.</li>
+              <li><strong style="color:var(--ink)">Payment details</strong> — handled by the payment method used at order confirmation. We never ask for, or store, full card numbers over text.</li>
+            </ul>
+
+            <h4>What we don't do</h4>
+            <ul>
+              <li>We don't sell your personal information. Ever.</li>
+              <li>We don't run ad trackers on this page, and we don't build profiles of your customers — the card simply opens your Google review page on their phone. What a customer does on Google is covered by Google's own privacy policy.</li>
+              <li>We don't send marketing texts you didn't ask for. Message and data rates may apply to texts between us, per your carrier.</li>
+            </ul>
+
+            <h4>Your choices</h4>
+            <p>Want us to correct or delete the contact details we hold for your order? Text or call 305-773-9417 and we'll take care of it. We keep order details only as long as we need them for support, records, and legal obligations.</p>
+
+            <h4>Questions</h4>
+            <p>Anything about these terms or your privacy: call or text <a href="tel:+13057739417" style="color:var(--cyan-hot);font-weight:700;text-decoration:none">305-773-9417</a>.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- FINAL CTA -->
+    <div class="wrap">
+      <div class="final reveal">
+        <div class="stars-row" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9 2.9-6z"/></svg>
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9 2.9-6z"/></svg>
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9 2.9-6z"/></svg>
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9 2.9-6z"/></svg>
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9 2.9-6z"/></svg>
+        </div>
+        <h2>Your next 5-star review is one tap away</h2>
+        <p>Every day without one, happy customers walk out and their review walks out with them. Put a TapReview Pro on the counter and start catching them all.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="#pricing">Get TapReview Pro</a>
+          <a class="btn btn-ghost" href="tel:+13057739417">Call 305-773-9417</a>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="wrap">
+        <div class="foot-links">
+          <a href="sms:+13057739417">Text to order</a>
+          <a href="tel:+13057739417">305-773-9417</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#biz">Start this business</a>
+          <a href="#faq">FAQ</a>
+          <a href="#terms">Terms &amp; Conditions</a>
+          <a href="#privacy">Privacy Policy</a>
+        </div>
+        <div>TapReview Pro · tapreviewpro.us — One tap. Five stars. Zero friction. All sales final — no exchanges, no refunds.</div>
+      </div>
+    </footer>
+
+    <script>
+      // Duplicate marquee content for a seamless loop
+      (function () {
+        var track = document.getElementById('marqueeTrack');
+        track.innerHTML += track.innerHTML;
+      })();
+
+      // 3D tilt on the product card (pointer devices only)
+      (function () {
+        var stage = document.getElementById('stage');
+        var tilt = document.getElementById('tilt');
+        if (!stage || !tilt || !window.matchMedia('(pointer: fine)').matches) return;
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        stage.addEventListener('pointermove', function (e) {
+          var r = stage.getBoundingClientRect();
+          var x = (e.clientX - r.left) / r.width - 0.5;
+          var y = (e.clientY - r.top) / r.height - 0.5;
+          tilt.style.transform = 'rotateY(' + (x * 16) + 'deg) rotateX(' + (-y * 14) + 'deg)';
+        });
+        stage.addEventListener('pointerleave', function () {
+          tilt.style.transform = 'rotateY(0deg) rotateX(0deg)';
+        });
+      })();
+
+      // Scroll reveals — generous margin, plus a hard fallback so content
+      // is never left hidden if the observer doesn't fire.
+      (function () {
+        var els = document.querySelectorAll('.reveal');
+        // Stagger cards inside each grid so they cascade in 3D
+        document.querySelectorAll('.steps, .features, .pricing, .catalog-grid').forEach(function (grid) {
+          Array.prototype.forEach.call(grid.children, function (child, i) {
+            if (child.classList.contains('reveal')) child.style.transitionDelay = (i % 3) * 0.12 + 's';
+          });
+        });
+        function showAll() {
+          els.forEach(function (el) { el.classList.add('in'); });
+        }
+        if (!('IntersectionObserver' in window)) { showAll(); return; }
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('in');
+              io.unobserve(entry.target);
+              setTimeout(function () { entry.target.style.transitionDelay = ''; }, 1100);
+            }
+          });
+        }, { threshold: 0.05, rootMargin: '400px 0px' });
+        els.forEach(function (el) { io.observe(el); });
+        setTimeout(showAll, 2500);
+      })();
+
+      // FAQ accordion
+      (function () {
+        document.querySelectorAll('.faq-item').forEach(function (item) {
+          var btn = item.querySelector('.faq-q');
+          var panel = item.querySelector('.faq-a');
+          btn.addEventListener('click', function () {
+            var open = item.classList.contains('open');
+            document.querySelectorAll('.faq-item.open').forEach(function (other) {
+              other.classList.remove('open');
+              other.querySelector('.faq-a').style.maxHeight = '0px';
+              other.querySelector('.faq-q').setAttribute('aria-expanded', 'false');
+            });
+            if (!open) {
+              item.classList.add('open');
+              panel.style.maxHeight = panel.scrollHeight + 'px';
+              btn.setAttribute('aria-expanded', 'true');
+            }
+          });
+        });
+      })();
+    </script>
+    <script>
+      // Animated starfield: twinkling drifting stars + occasional shooting stars
+      (function () {
+        var canvas = document.getElementById('starfield');
+        if (!canvas) return;
+        var ctx = canvas.getContext('2d');
+        var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var stars = [], meteors = [], w = 0, h = 0, raf = null, lastMeteor = 0;
+        function drawStatic() {
+          ctx.clearRect(0, 0, w, h);
+          stars.forEach(function (st) {
+            ctx.globalAlpha = 0.3 + (st.r / 1.8) * 0.5;
+            ctx.fillStyle = '#cfe9ff';
+            ctx.beginPath(); ctx.arc(st.x, st.y, st.r, 0, Math.PI * 2); ctx.fill();
+          });
+          ctx.globalAlpha = 1;
+        }
+        function resize() {
+          var dpr = Math.min(window.devicePixelRatio || 1, 2);
+          w = window.innerWidth; h = window.innerHeight;
+          canvas.width = w * dpr; canvas.height = h * dpr;
+          canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          stars = [];
+          var count = Math.min(150, Math.floor(w * h / 12000));
+          for (var i = 0; i < count; i++) {
+            stars.push({ x: Math.random() * w, y: Math.random() * h, r: Math.random() * 1.4 + 0.4, p: Math.random() * Math.PI * 2, s: 0.4 + Math.random() * 0.9, drift: Math.random() * 0.05 + 0.012 });
+          }
+          if (reduced) drawStatic();
+        }
+        function frame(t) {
+          ctx.clearRect(0, 0, w, h);
+          stars.forEach(function (st) {
+            st.p += 0.02 * st.s;
+            st.y += st.drift;
+            if (st.y > h + 2) { st.y = -2; st.x = Math.random() * w; }
+            ctx.globalAlpha = 0.3 + 0.7 * Math.abs(Math.sin(st.p));
+            ctx.fillStyle = st.r > 1.3 ? '#5eeaff' : '#dbeafe';
+            ctx.beginPath(); ctx.arc(st.x, st.y, st.r, 0, Math.PI * 2); ctx.fill();
+          });
+          ctx.globalAlpha = 1;
+          if (t - lastMeteor > 6000 && meteors.length === 0) {
+            lastMeteor = t + Math.random() * 5000;
+            meteors.push({ x: w * (0.3 + Math.random() * 0.6), y: h * Math.random() * 0.25, vx: -(5 + Math.random() * 3), vy: 3 + Math.random() * 2, life: 1 });
+          }
+          meteors = meteors.filter(function (m) { return m.life > 0; });
+          meteors.forEach(function (m) {
+            m.x += m.vx; m.y += m.vy; m.life -= 0.016;
+            var grad = ctx.createLinearGradient(m.x, m.y, m.x - m.vx * 10, m.y - m.vy * 10);
+            grad.addColorStop(0, 'rgba(94,234,255,' + (0.85 * Math.max(m.life, 0)) + ')');
+            grad.addColorStop(1, 'rgba(94,234,255,0)');
+            ctx.strokeStyle = grad; ctx.lineWidth = 2; ctx.lineCap = 'round';
+            ctx.beginPath(); ctx.moveTo(m.x, m.y); ctx.lineTo(m.x - m.vx * 10, m.y - m.vy * 10); ctx.stroke();
+          });
+          raf = requestAnimationFrame(frame);
+        }
+        resize();
+        window.addEventListener('resize', resize);
+        if (!reduced) raf = requestAnimationFrame(frame);
+        document.addEventListener('visibilitychange', function () {
+          if (reduced) return;
+          if (document.hidden) { if (raf) cancelAnimationFrame(raf); raf = null; }
+          else if (!raf) raf = requestAnimationFrame(frame);
+        });
+      })();
+
+      // Cursor spotlight that trails the pointer (desktop only)
+      (function () {
+        var spot = document.getElementById('spotlight');
+        if (!spot || !window.matchMedia('(pointer: fine)').matches) return;
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        var tx = -600, ty = -600, x = tx, y = ty;
+        window.addEventListener('pointermove', function (e) {
+          tx = e.clientX; ty = e.clientY;
+          document.body.classList.add('spot-on');
+        });
+        (function loop() {
+          x += (tx - x) * 0.08; y += (ty - y) * 0.08;
+          spot.style.left = x + 'px'; spot.style.top = y + 'px';
+          requestAnimationFrame(loop);
+        })();
+      })();
+
+      // 3D tilt on the video frame (pointer devices only)
+      (function () {
+        var frame = document.querySelector('.video-frame');
+        if (!frame || !window.matchMedia('(pointer: fine)').matches) return;
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        var holder = frame.parentElement;
+        holder.style.perspective = '1400px';
+        holder.addEventListener('pointermove', function (e) {
+          var r = frame.getBoundingClientRect();
+          var px = (e.clientX - r.left) / r.width - 0.5;
+          var py = (e.clientY - r.top) / r.height - 0.5;
+          frame.style.transform = 'rotateY(' + (px * 7) + 'deg) rotateX(' + (-py * 6) + 'deg)';
+        });
+        holder.addEventListener('pointerleave', function () { frame.style.transform = ''; });
+      })();
+    </script>
+    <script>
+      /* ============================================================
+         CHECKOUT LINKS — the ONE place card-payment URLs live.
+         Paste each product's Stripe payment-link URL between the
+         quotes for its key below. Every "Buy Now — pay by card"
+         button carries data-checkout="<key>" and, until its URL is
+         filled in here, falls back to that product's text-to-order
+         (SMS) href — so no button is ever dead.
+         ============================================================ */
+      var CHECKOUT_URLS = {
+        'starter': 'https://buy.stripe.com/9B65kF3YT5Yp0LaaJR9Zm0b',
+        'trio': 'https://buy.stripe.com/14A28t2UP1I9alK6tB9Zm0c',
+        'empire': 'https://buy.stripe.com/00w5kF52XeuV0La8BJ9Zm0d',
+        'plaque-instagram': 'https://buy.stripe.com/3cI28tanhaeFfG45px9Zm0e',
+        'plaque-facebook': 'https://buy.stripe.com/3cI28tanhaeFfG45px9Zm0e',
+        'card-google-black': 'https://buy.stripe.com/3cI28tanhaeFfG45px9Zm0e',
+        'card-google-white': 'https://buy.stripe.com/3cI28tanhaeFfG45px9Zm0e',
+        'card-instagram': 'https://buy.stripe.com/3cI28tanhaeFfG45px9Zm0e',
+        'card-facebook': 'https://buy.stripe.com/3cI28tanhaeFfG45px9Zm0e',
+        'card-tiktok': 'https://buy.stripe.com/3cI28tanhaeFfG45px9Zm0e',
+        'card-whatsapp': 'https://buy.stripe.com/3cI28tanhaeFfG45px9Zm0e',
+        'card-tripadvisor': 'https://buy.stripe.com/3cI28tanhaeFfG45px9Zm0e',
+        'card-youtube': 'https://buy.stripe.com/3cI28tanhaeFfG45px9Zm0e',
+        'card-yelp': 'https://buy.stripe.com/3cI28tanhaeFfG45px9Zm0e',
+        'mix-trio': 'https://buy.stripe.com/bJe28t1QLaeF51q4lt9Zm0f',
+        'mix-empire': 'https://buy.stripe.com/14AeVfbrlaeF0La19h9Zm0g',
+        'biz-starter': 'https://buy.stripe.com/7sYeVfeDxbiJdxW7xF9Zm0h',
+        'biz-launch': 'https://buy.stripe.com/9B66oJ52XcmN3Xm4lt9Zm0i',
+        'biz-mentorship': 'https://buy.stripe.com/8x2fZj2UPcmN8dCdW39Zm0j'
+      };
+      (function () {
+        document.querySelectorAll('a[data-checkout]').forEach(function (a) {
+          var url = CHECKOUT_URLS[a.getAttribute('data-checkout')];
+          if (url) a.setAttribute('href', url);
+        });
+      })();
+
+      /* ============================================================
+         EN / ES language toggle. Translates every visible text node
+         found in the dictionary below. The operative Terms &
+         Privacy body text stays in English by design (a Spanish
+         reference note appears above each legal card in ES mode).
+         ============================================================ */
+      (function () {
+        var ES = {
+          "Watch it": "Míralo en acción",
+          "How it works": "Cómo funciona",
+          "Why TapReview": "Por qué TapReview",
+          "Pricing": "Precios",
+          "Full lineup": "Catálogo completo",
+          "Start this business": "Inicia este negocio",
+          "FAQ": "Preguntas frecuentes",
+          "CALL / TEXT 305-773-9417": "LLAMA / MENSAJEA 305-773-9417",
+          "NFC REVIEW TECHNOLOGY": "TECNOLOGÍA DE RESEÑAS NFC",
+          "One tap.": "Un toque.",
+          "Five stars.": "Cinco estrellas.",
+          "Zero friction.": "Cero fricción.",
+          "TapReview Pro is the tap card from the future. Your customer holds their phone to it and your": "TapReview Pro es la tarjeta de toque del futuro. Tu cliente acerca su teléfono y tu",
+          "Google review page opens instantly": "página de reseñas de Google se abre al instante",
+          "— stars up, keyboard ready — while they're still standing in front of you. No app. No QR-code hunting. No “search for us later.”": "— estrellas listas, teclado listo — mientras todavía está frente a ti. Sin app. Sin buscar códigos QR. Sin «búscanos después».",
+          "They review you before they even leave.": "Te dejan la reseña antes de salir.",
+          "Get yours — from $22": "Pide la tuya — desde $22",
+          "See how it works": "Mira cómo funciona",
+          "tap to review page": "del toque a la reseña",
+          "no subscription, ever": "sin suscripción, jamás",
+          "unlimited, no battery": "ilimitados, sin batería",
+          "NFC CHIP INSIDE": "CHIP NFC INTEGRADO",
+          "★★★★★ GOOGLE READY": "★★★★★ LISTO PARA GOOGLE",
+          "NO APP NEEDED": "SIN NECESIDAD DE APP",
+          "WORKS ON IPHONE & ANDROID": "FUNCIONA EN IPHONE Y ANDROID",
+          "NO MONTHLY FEES": "SIN CUOTAS MENSUALES",
+          "PRE-PROGRAMMED FOR YOU": "PREPROGRAMADA PARA TI",
+          "UNLIMITED TAPS": "TOQUES ILIMITADOS",
+          "REVIEWS IN UNDER 5 SECONDS": "RESEÑAS EN MENOS DE 5 SEGUNDOS",
+          "// SEE IT IN ACTION": "// MÍRALO EN ACCIÓN",
+          "Watch how it works": "Mira cómo funciona",
+          "Real counter, real moment: she finishes shopping, steps up to pay, and the owner asks for one quick favor. Watch her tap her phone right on the plaque — review page open, stars tapped, done. And watch his face when it lands.": "Mostrador real, momento real: ella termina de comprar, se acerca a pagar y el dueño le pide un favor rápido. Mira cómo toca la placa con su teléfono — página de reseña abierta, estrellas marcadas, listo. Y mira su cara cuando llega.",
+          "Press play — sound on.": "Dale play — con el sonido activado.",
+          "Your browser can't play this video — but here's the short version: the owner asks for a review, the customer taps her phone on the plaque, and five stars go live in about five seconds.": "Tu navegador no puede reproducir este video — pero aquí va la versión corta: el dueño pide una reseña, la clienta toca la placa con su teléfono y las cinco estrellas se publican en unos cinco segundos.",
+          "“Hey, can you please leave us a review?": "«Oye, ¿puedes dejarnos una reseña, por favor?",
+          "Just tap right there — it takes five seconds.": "Solo toca ahí — toma cinco segundos.",
+          "”": "»",
+          "That's the whole pitch. One line, one tap, one 5-star review — and one very happy owner — before your customer walks out the door.": "Ese es todo el discurso. Una frase, un toque, una reseña de 5 estrellas — y un dueño feliz — antes de que tu cliente salga por la puerta.",
+          "// THE SYSTEM": "// EL SISTEMA",
+          "Three seconds. Three steps.": "Tres segundos. Tres pasos.",
+          "Asking for reviews the old way — “find us on Google later” — is dead. TapReview Pro catches the happy customer at the exact moment they're happiest: right in front of you.": "Pedir reseñas a la antigua — «búscanos en Google después» — ya murió. TapReview Pro capta al cliente contento en el momento exacto en que está más feliz: justo frente a ti.",
+          "Put it on the counter": "Ponla en el mostrador",
+          "Your TapReview Pro arrives pre-programmed to your business's Google review page. Set it by the register, hand it over with the check, or keep it in your pocket on the job site.": "Tu TapReview Pro llega preprogramada con la página de reseñas de Google de tu negocio. Ponla junto a la caja, entrégala con la cuenta o llévala en el bolsillo en la obra.",
+          "Customer taps their phone": "El cliente toca con su teléfono",
+          "One tap — that's it. The NFC chip wakes up with zero battery and fires your review page straight onto their screen. Nothing to download, nothing to type, nothing to search.": "Un toque — eso es todo. El chip NFC se activa sin batería y lanza tu página de reseñas directo a su pantalla. Nada que descargar, nada que escribir, nada que buscar.",
+          "Five stars go live": "Las cinco estrellas se publican",
+          "They tap the stars, drop a line, hit post. Fresh 5-star reviews stack up on your Google profile — the exact thing that pushes you up local search and brings the phone calls in.": "Tocan las estrellas, escriben una línea y publican. Las reseñas frescas de 5 estrellas se acumulan en tu perfil de Google — exactamente lo que te sube en la búsqueda local y hace que entren las llamadas.",
+          "// THE HARDWARE": "// EL HARDWARE",
+          "Built like it came from 2030": "Construida como si viniera de 2030",
+          "This isn't a paper sign or a QR sticker that fades in the sun. It's a solid tap device engineered to live on your counter and work every single day.": "No es un letrero de papel ni una calcomanía QR que se borra con el sol. Es un dispositivo de toque sólido, diseñado para vivir en tu mostrador y funcionar todos los días.",
+          "True NFC tap tech": "Tecnología de toque NFC real",
+          "A real NFC chip sealed inside — the same contactless tech as tap-to-pay. Bring a phone near, the review page opens. Under 5 seconds, every time.": "Un chip NFC real sellado por dentro — la misma tecnología sin contacto que el pago con tarjeta. Acerca un teléfono y la página de reseña se abre. En menos de 5 segundos, siempre.",
+          "Every phone. No app.": "Todos los teléfonos. Sin app.",
+          "Works on iPhone and Android out of the box — no app download, no account, no login wall between your customer and your 5 stars.": "Funciona en iPhone y Android desde que sale de la caja — sin descargar apps, sin cuentas, sin muros de inicio de sesión entre tu cliente y tus 5 estrellas.",
+          "No battery. No charging.": "Sin batería. Sin carga.",
+          "The chip is passive — it pulls power from the phone itself. It never dies, never needs a cable, and never takes a day off.": "El chip es pasivo — se alimenta del propio teléfono. Nunca se muere, nunca necesita un cable y nunca se toma un día libre.",
+          "Reprogrammable link": "Enlace reprogramable",
+          "New location? New review page? The link on your TapReview Pro can be updated — you don't have to buy a new card to change where the tap lands.": "¿Nueva ubicación? ¿Nueva página de reseñas? El enlace de tu TapReview Pro se puede actualizar — no tienes que comprar una tarjeta nueva para cambiar a dónde lleva el toque.",
+          "Zero monthly fees": "Cero cuotas mensuales",
+          "One payment and it's yours forever. No subscription, no per-review charges, no platform holding your link hostage.": "Un solo pago y es tuya para siempre. Sin suscripción, sin cargos por reseña, sin ninguna plataforma reteniendo tu enlace.",
+          "Programmed for you": "Programada para ti",
+          "Send us your business name and we set the card to your Google review page before it ships. Open the box, put it on the counter, start collecting stars.": "Envíanos el nombre de tu negocio y configuramos la tarjeta con tu página de reseñas de Google antes de enviarla. Abre la caja, ponla en el mostrador y empieza a coleccionar estrellas.",
+          "// DEPLOY ANYWHERE": "// ÚSALA EN TODAS PARTES",
+          "If customers check out, it works there": "Si ahí pagan los clientes, ahí funciona",
+          "Restaurants": "Restaurantes",
+          "& cafés": "y cafeterías",
+          "Barbershops": "Barberías",
+          "& salons": "y salones",
+          "Auto shops": "Talleres",
+          "& detailers": "y detailing",
+          "Dental": "Oficinas",
+          "& medical offices": "dentales y médicas",
+          "Law firms": "Bufetes de abogados",
+          "Real estate": "Oficinas de",
+          "offices": "bienes raíces",
+          "Contractors": "Contratistas",
+          "& home services": "y servicios del hogar",
+          "Gyms": "Gimnasios",
+          "& studios": "y estudios",
+          "Retail": "Mostradores",
+          "counters": "de tiendas",
+          "Food trucks": "Camiones de comida",
+          "// GET YOURS": "// PIDE LA TUYA",
+          "Pick your firepower": "Elige tu potencia",
+          "One card pays for itself with a single new customer. Packs cover every register, table, and crew — and the per-card price drops hard.": "Una sola tarjeta se paga con un solo cliente nuevo. Los paquetes cubren cada caja, mesa y equipo — y el precio por tarjeta baja en serio.",
+          "Starter": "Inicial",
+          "1 × TapReview Pro card": "1 × tarjeta TapReview Pro",
+          "$22 per card · one-time": "$22 por tarjeta · pago único",
+          "Pre-programmed to your Google page": "Preprogramada con tu página de Google",
+          "Unlimited taps, no battery": "Toques ilimitados, sin batería",
+          "No app, no subscription": "Sin app, sin suscripción",
+          "Perfect for a single counter": "Perfecta para un solo mostrador",
+          "Order 1 card": "Pedir 1 tarjeta",
+          "MOST POPULAR": "LA MÁS POPULAR",
+          "Trio Pack": "Paquete Trío",
+          "3 × TapReview Pro cards": "3 × tarjetas TapReview Pro",
+          "Only $18.33 per card · one-time": "Solo $18.33 por tarjeta · pago único",
+          "YOU SAVE $11 VS. SINGLES": "AHORRAS $11 VS. INDIVIDUALES",
+          "Everything in Starter": "Todo lo del Inicial",
+          "Cover the register, bar & host stand": "Cubre la caja, el bar y la recepción",
+          "Each card can point to a different location": "Cada tarjeta puede apuntar a una ubicación distinta",
+          "Best for one busy location": "Ideal para un local concurrido",
+          "Order the 3-pack": "Pedir el paquete de 3",
+          "BEST VALUE": "MEJOR VALOR",
+          "Empire Pack": "Paquete Imperio",
+          "10 × TapReview Pro cards": "10 × tarjetas TapReview Pro",
+          "Only $17.50 per card · one-time": "Solo $17.50 por tarjeta · pago único",
+          "YOU SAVE $45 VS. SINGLES": "AHORRAS $45 VS. INDIVIDUALES",
+          "Everything in Trio Pack": "Todo lo del Paquete Trío",
+          "Every table, truck & crew covered": "Cada mesa, camión y equipo cubierto",
+          "Built for multi-location businesses": "Hecha para negocios con varias ubicaciones",
+          "Lowest price per card we offer": "El precio por tarjeta más bajo que ofrecemos",
+          "Order the 10-pack": "Pedir el paquete de 10",
+          "Buy Now — pay by card": "Comprar ahora — paga con tarjeta",
+          "How ordering works:": "Cómo pedir:",
+          "tap a button to text us your order, or call": "toca un botón para enviarnos tu pedido por mensaje, o llama al",
+          ". Send your business name, we program your cards to your Google review page, and they ship ready to tap.": ". Envíanos el nombre de tu negocio, programamos tus tarjetas con tu página de reseñas de Google y se envían listas para tocar.",
+          "One-time payment — no subscription, ever. All sales are final — no exchanges, no refunds.": "Pago único — sin suscripción, jamás. Todas las ventas son finales — sin cambios ni devoluciones.",
+          "// TAP TO FOLLOW": "// TOCA PARA SEGUIR",
+          "The full lineup — every platform, one tap": "El catálogo completo — cada plataforma, un toque",
+          "Reviews were just the beginning. The same tap tech now grows your followers and opens direct chats: counter plaques that pull Instagram and Facebook follows, and pocket-size tap cards for nine platforms.": "Las reseñas fueron solo el comienzo. La misma tecnología de toque ahora crece tus seguidores y abre chats directos: placas de mostrador que consiguen seguidores en Instagram y Facebook, y tarjetas de bolsillo para nueve plataformas.",
+          "Same prices as the flagship plaque — $22 each, Trio $55, Empire $175": "Los mismos precios de la placa insignia — $22 cada una, Trío $55, Imperio $175",
+          "— and Trio and Empire packs mix & match any products in the lineup.": "— y los paquetes Trío e Imperio combinan cualquier producto del catálogo.",
+          "Counter plaques —": "Placas de mostrador —",
+          "tap to follow": "toca para seguir",
+          "Instagram Follow Plaque": "Placa de Seguidores de Instagram",
+          "The big gradient counter plaque. A customer's tap lands them right on your Instagram profile — new follower before they walk out the door.": "La placa grande de mostrador con degradado. El toque de un cliente lo lleva directo a tu perfil de Instagram — un seguidor nuevo antes de que salga por la puerta.",
+          "Facebook Follow Plaque": "Placa de Seguidores de Facebook",
+          "The blue counter plaque for your Facebook Page. One tap opens your page, ready to follow — perfect by the register or the front desk.": "La placa azul de mostrador para tu página de Facebook. Un toque abre tu página, lista para seguir — perfecta junto a la caja o en la recepción.",
+          "Order this plaque": "Pedir esta placa",
+          "Tap cards —": "Tarjetas de toque —",
+          "wallet-size, every platform": "tamaño billetera, cada plataforma",
+          "$22 EACH · TRIO $55 · EMPIRE $175": "$22 CADA UNA · TRÍO $55 · IMPERIO $175",
+          "Google Review Card — Black": "Tarjeta de Reseñas de Google — Negra",
+          "The flagship move in card form. A tap opens your Google review page, stars up, keyboard ready.": "El movimiento insignia en formato tarjeta. Un toque abre tu página de reseñas de Google, estrellas listas, teclado listo.",
+          "Google Review Card — White": "Tarjeta de Reseñas de Google — Blanca",
+          "Same five-star firepower, clean white edition. Programmed to your Google review page before it ships.": "La misma potencia de cinco estrellas, edición blanca y limpia. Programada con tu página de reseñas de Google antes de enviarse.",
+          "Order this card": "Pedir esta tarjeta",
+          "Instagram Follow Card": "Tarjeta de Seguidores de Instagram",
+          "Pocket-size follow machine. Hand it over, they tap, your Instagram profile opens — follow in one touch.": "Máquina de seguidores tamaño bolsillo. Entrégala, tocan, tu perfil de Instagram se abre — seguidores con un solo toque.",
+          "Facebook Follow Card": "Tarjeta de Seguidores de Facebook",
+          "A tap opens your Facebook Page, ready to follow. Built for counters, tables, and crews on the move.": "Un toque abre tu página de Facebook, lista para seguir. Hecha para mostradores, mesas y equipos en movimiento.",
+          "TikTok Follow Card": "Tarjeta de Seguidores de TikTok",
+          "One tap opens your TikTok profile. Turn every happy customer into a follower while the moment is hot.": "Un toque abre tu perfil de TikTok. Convierte a cada cliente contento en seguidor mientras el momento está caliente.",
+          "WhatsApp Chat Card": "Tarjeta de Chat de WhatsApp",
+          "A tap opens a WhatsApp chat with your business. Questions become conversations — and conversations become customers.": "Un toque abre un chat de WhatsApp con tu negocio. Las preguntas se vuelven conversaciones — y las conversaciones se vuelven clientes.",
+          "Tripadvisor Review Card": "Tarjeta de Reseñas de Tripadvisor",
+          "For restaurants, tours, hotels, and attractions — a tap opens your Tripadvisor page, ready for the review.": "Para restaurantes, tours, hoteles y atracciones — un toque abre tu página de Tripadvisor, lista para la reseña.",
+          "YouTube Subscribe Card": "Tarjeta de Suscripción de YouTube",
+          "A tap opens your channel — new subscribers while they wait, straight from the counter.": "Un toque abre tu canal — suscriptores nuevos mientras esperan, directo desde el mostrador.",
+          "Yelp Review Card": "Tarjeta de Reseñas de Yelp",
+          "A tap opens your Yelp page with the stars ready. Catch the review at the counter, not never.": "Un toque abre tu página de Yelp con las estrellas listas. Captura la reseña en el mostrador, no «algún día».",
+          "Trio — $55": "Trío — $55",
+          "Any 3 products, mix & match · $18.33 each": "Cualesquiera 3 productos, combínalos · $18.33 cada uno",
+          "YOU SAVE $11": "AHORRAS $11",
+          "Order a Trio": "Pedir un Trío",
+          "Empire — $175": "Imperio — $175",
+          "Any 10 products, mix & match · $17.50 each": "Cualesquiera 10 productos, combínalos · $17.50 cada uno",
+          "YOU SAVE $45": "AHORRAS $45",
+          "Order an Empire": "Pedir un Imperio",
+          "Every product is programmed to your page before it ships — your review page, profile, or chat link. No subscription, no app, no battery.": "Cada producto se programa con tu página antes de enviarse — tu página de reseñas, tu perfil o tu enlace de chat. Sin suscripción, sin app, sin batería.",
+          "All sales are final — no exchanges, no refunds": "Todas las ventas son finales — sin cambios ni devoluciones",
+          "— on every product in the lineup.": "— en cada producto del catálogo.",
+          "// OWN THE BUSINESS": "// SÉ DUEÑO DEL NEGOCIO",
+          "Start this business": "Inicia este negocio",
+          "Don't just buy the cards —": "No solo compres las tarjetas —",
+          "sell them": "véndelas",
+          ". Interested in starting this business? Pick your level: supplier access and the full playbook, a done-for-you website, or 1-on-1 training with direct access to OE himself.": ". ¿Te interesa iniciar este negocio? Elige tu nivel: acceso al proveedor y la guía completa, un sitio web hecho para ti, o entrenamiento 1 a 1 con acceso directo al propio OE.",
+          "Start this business": "Inicia este negocio",
+          "One-time · the full starter kit": "Pago único · el kit inicial completo",
+          "Full access to our supplier": "Acceso completo a nuestro proveedor",
+          "Sales scripts that close": "Guiones de ventas que cierran",
+          "Rebuttals for every objection": "Respuestas para cada objeción",
+          "Territories, and more": "Territorios, y más",
+          "THE PAYBACK MATH": "LA CUENTA QUE IMPORTA",
+          "Sell just 19 cards at $22 and your $399 is paid back — everything after that is profit.": "Vende solo 19 tarjetas a $22 y tus $399 ya se pagaron — todo lo que sigue es ganancia.",
+          "Start for $399": "Empezar por $399",
+          "Launch": "Lanzamiento",
+          "Everything + your website": "Todo + tu sitio web",
+          "One-time · ready to sell online": "Pago único · listo para vender en línea",
+          "Done-for-you website": "Sitio web hecho para ti",
+          "Launch looking like a real brand from day one": "Lanza luciendo como una marca real desde el día uno",
+          "Launch for $899": "Lanzar por $899",
+          "DIRECT ACCESS": "ACCESO DIRECTO",
+          "Mentorship": "Mentoría",
+          "Everything + 1-on-1 with OE": "Todo + 1 a 1 con OE",
+          "One-time · the full package": "Pago único · el paquete completo",
+          "Everything in Launch": "Todo lo del Lanzamiento",
+          "1-on-1 training via Zoom calls": "Entrenamiento 1 a 1 por llamadas de Zoom",
+          "Direct access to OE": "Acceso directo a OE",
+          "Go all in — $2,500": "Apuesta todo — $2,500",
+          "How it works:": "Cómo funciona:",
+          "tap a button to text us, or call": "toca un botón para escribirnos, o llama al",
+          ". Every package is a one-time payment.": ". Cada paquete es un pago único.",
+          "— on every business package, just like every product we sell.": "— en cada paquete de negocio, igual que en cada producto que vendemos.",
+          "Is your city still open?": "¿Tu ciudad sigue disponible?",
+          "Territories are claimed first come, first served — once a city is taken, it's gone. Check yours before somebody else locks it down.": "Los territorios se asignan por orden de llegada — cuando una ciudad se toma, se acabó. Revisa la tuya antes de que otro la asegure.",
+          "Text TERRITORY to 305-773-9417": "Envía TERRITORY al 305-773-9417",
+          "// INTEL": "// RESPUESTAS",
+          "Questions, answered": "Preguntas, respondidas",
+          "Does my customer need an app?": "¿Mi cliente necesita una app?",
+          "No. Modern iPhones and Android phones read NFC natively. Your customer holds their phone near the card and your Google review page opens in their browser — nothing to install, no account to create.": "No. Los iPhone y Android modernos leen NFC de forma nativa. Tu cliente acerca su teléfono a la tarjeta y tu página de reseñas de Google se abre en su navegador — nada que instalar, ninguna cuenta que crear.",
+          "How does the card know to open MY review page?": "¿Cómo sabe la tarjeta que debe abrir MI página de reseñas?",
+          "We program it for you before it ships. Send us your business name when you order and we find your Google review link and load it onto the chip. Open the box and it works — no setup on your end.": "La programamos para ti antes de enviarla. Envíanos el nombre de tu negocio al ordenar y buscamos tu enlace de reseñas de Google y lo cargamos en el chip. Abre la caja y funciona — sin configuración de tu parte.",
+          "Is there a monthly fee or per-review charge?": "¿Hay una cuota mensual o un cargo por reseña?",
+          "Never. You pay once — $22 for one card, $55 for three, $175 for ten — and the card is yours. Unlimited taps, unlimited reviews, no subscription holding your link hostage.": "Nunca. Pagas una sola vez — $22 por una tarjeta, $55 por tres, $175 por diez — y la tarjeta es tuya. Toques ilimitados, reseñas ilimitadas, sin suscripciones reteniendo tu enlace.",
+          "What is your refund and exchange policy?": "¿Cuál es su política de devoluciones y cambios?",
+          "All sales are final — no exchanges, no refunds.": "Todas las ventas son finales — sin cambios ni devoluciones.",
+          "Every TapReview Pro is programmed to your business and tested before it ships, so please confirm your business name and Google review link when you order. The full terms are in the Terms & Conditions section below.": "Cada TapReview Pro se programa para tu negocio y se prueba antes de enviarse, así que confirma el nombre de tu negocio y tu enlace de reseñas de Google al ordenar. Los términos completos están en la sección de Términos y Condiciones más abajo.",
+          "Can I change where the tap goes later?": "¿Puedo cambiar a dónde lleva el toque después?",
+          "Yes. The link stored on the chip can be updated — point it at a different location's review page or a new link without buying a new card. Text us and we'll walk you through it.": "Sí. El enlace guardado en el chip se puede actualizar — apúntalo a la página de reseñas de otra ubicación o a un enlace nuevo sin comprar otra tarjeta. Escríbenos y te guiamos paso a paso.",
+          "Does it need batteries or charging?": "¿Necesita batería o cargarse?",
+          "No. NFC chips are passive — the phone powers the chip for the split second of the tap. There is literally nothing to charge and nothing to die at the worst moment.": "No. Los chips NFC son pasivos — el teléfono alimenta el chip durante la fracción de segundo del toque. Literalmente no hay nada que cargar y nada que se muera en el peor momento.",
+          "I have multiple locations. Which pack do I need?": "Tengo varias ubicaciones. ¿Qué paquete necesito?",
+          "The Empire Pack (10 cards, $175) is built for that — and each card can be programmed to a different location's Google page, so every storefront collects its own reviews. Running one busy spot? The Trio Pack covers your main touchpoints.": "El Paquete Imperio (10 tarjetas, $175) está hecho para eso — y cada tarjeta se puede programar con la página de Google de una ubicación distinta, para que cada local recoja sus propias reseñas. ¿Tienes un solo local concurrido? El Paquete Trío cubre tus puntos de contacto principales.",
+          "What other tap products do you sell?": "¿Qué otros productos de toque venden?",
+          "A full lineup at the same prices: Instagram and Facebook Follow counter plaques, plus pocket-size tap cards for Google Reviews (black or white), Instagram, Facebook, TikTok, WhatsApp, Tripadvisor, YouTube, and Yelp. Singles are $22, the Trio Pack is $55, and the Empire Pack is $175 — and Trio and Empire packs mix & match any products in the lineup. Like everything we sell,": "Un catálogo completo a los mismos precios: placas de mostrador para seguidores de Instagram y Facebook, más tarjetas de bolsillo para Reseñas de Google (negras o blancas), Instagram, Facebook, TikTok, WhatsApp, Tripadvisor, YouTube y Yelp. Las individuales cuestan $22, el Paquete Trío $55 y el Paquete Imperio $175 — y los paquetes Trío e Imperio combinan cualquier producto del catálogo. Como todo lo que vendemos,",
+          "all sales are final — no exchanges, no refunds": "todas las ventas son finales — sin cambios ni devoluciones",
+          "// THE FINE PRINT": "// LA LETRA PEQUEÑA",
+          "Terms & privacy": "Términos y privacidad",
+          "Plain English, no surprises. By ordering a TapReview Pro, you agree to these terms.": "Lenguaje claro, sin sorpresas. Al ordenar una TapReview Pro, aceptas estos términos.",
+          "Terms & Conditions": "Términos y Condiciones",
+          "Privacy Policy": "Política de Privacidad",
+          "Your next 5-star review is one tap away": "Tu próxima reseña de 5 estrellas está a un toque",
+          "Every day without one, happy customers walk out and their review walks out with them. Put a TapReview Pro on the counter and start catching them all.": "Cada día sin una, los clientes contentos salen y su reseña sale con ellos. Pon una TapReview Pro en el mostrador y empieza a capturarlas todas.",
+          "Get TapReview Pro": "Pide tu TapReview Pro",
+          "Call 305-773-9417": "Llama al 305-773-9417",
+          "Text to order": "Pedir por mensaje",
+          "TapReview Pro · tapreviewpro.us — One tap. Five stars. Zero friction. All sales final — no exchanges, no refunds.": "TapReview Pro · tapreviewpro.us — Un toque. Cinco estrellas. Cero fricción. Todas las ventas son finales — sin cambios ni devoluciones."
+        };
+        var TITLES = {
+          en: 'TapReview Pro — One Tap. Five Stars.',
+          es: 'TapReview Pro — Un toque. Cinco estrellas.'
+        };
+        var lang = 'en';
+        var nodes = [];
+        function norm(s) { return s.replace(/\s+/g, ' ').trim(); }
+        function collect() {
+          nodes = [];
+          var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+            acceptNode: function (n) {
+              if (!n.nodeValue || !n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+              var p = n.parentElement;
+              if (!p || p.closest('script, style, .lang-toggle, .es-note')) return NodeFilter.FILTER_REJECT;
+              return NodeFilter.FILTER_ACCEPT;
+            }
+          });
+          var n;
+          while ((n = walker.nextNode())) nodes.push({ node: n, en: n.nodeValue });
+        }
+        function apply(next) {
+          lang = next;
+          document.documentElement.lang = next;
+          document.title = TITLES[next];
+          nodes.forEach(function (rec) {
+            if (next === 'en') { rec.node.nodeValue = rec.en; return; }
+            var key = norm(rec.en);
+            if (!Object.prototype.hasOwnProperty.call(ES, key)) return;
+            var m = rec.en.match(/^(\s*)([\s\S]*?)(\s*)$/);
+            rec.node.nodeValue = (m ? m[1] : '') + ES[key] + (m ? m[3] : '');
+          });
+          document.querySelectorAll('[data-lang-opt]').forEach(function (el) {
+            el.classList.toggle('on', el.getAttribute('data-lang-opt') === next);
+          });
+          document.querySelectorAll('.es-note').forEach(function (el) { el.hidden = next !== 'es'; });
+          document.querySelectorAll('.faq-item.open .faq-a').forEach(function (panel) {
+            panel.style.maxHeight = panel.scrollHeight + 'px';
+          });
+        }
+        collect();
+        document.getElementById('langToggle').addEventListener('click', function () {
+          apply(lang === 'en' ? 'es' : 'en');
+        });
+      })();
+    </script>
+  </body>
+</html>
